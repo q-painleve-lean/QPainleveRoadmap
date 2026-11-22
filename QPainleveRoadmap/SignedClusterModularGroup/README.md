@@ -45,47 +45,67 @@ Ĝ の積は成分ごとの積である。格子の等長変換 g と境界の�
 
 ### 0.1 指標トーラスと関数体
 
-体 k と有限自由整数加群 B に対し、群環 k[B]、スキーム 𝕋_k(B)=Spec k[B]、k 点 Hom(B,k×)、分数体 k(B) を構成する。k[B] の指数 b に対応する単項式を Xᵇ とする。基底を選んだ Laurent 多項式環との同型、単項式の線形独立性、群環が整域であることを証明する。
+体 k と有限自由整数加群 B に対し、群環 k[B] は既存の `AddMonoidAlgebra k B`、分数体 k(B) は `FractionRing` を用いる。スキーム 𝕋_k(B)=Spec k[B] とその群構造は、`MonoidAlgebra k (Multiplicative B)` との標準同型を通して `TauCeti.DiagonalizableGroup.groupScheme` から得る。k 点 Hom(B,k×) との同型と格子準同型に沿う反変性には `schemePointsMulEquiv` と `schemePointsMulEquiv_groupSchemeMap` を使う。指数 b の単項式を Xᵇ とする。
 
-格子準同型 f:B→C の指標写像 𝕋_k(C)→𝕋_k(B) を構成し、単項式の引き戻し Xᵇ↦Xᶠ⁽ᵇ⁾、恒等・合成・基底変更との整合性を証明する。格子の単射に対して群環と関数体の単射を、同型に対してトーラスと関数体の同型を得る。k(B) の自己同型は基底単項式への作用で決まり、トーラスの支配的有理写像の等号は関数体の引き戻しの等号と同値である。特殊点での値の一致をこの等号の定義にしない。
+B=I→₀ℤ の座標環は `TauCeti.LaurentRing k I` である。既存の `unitX`、`aeval`、`aevalEquiv`、`algHom_ext`、`renameEquiv` を用い、`MvPolynomial.toLaurent` の単射と `LaurentRing.isLocalization` で多項式環からの局所化を扱う。一般の B は整数基底の `repr` でこの表示へ移し、基底変更との整合性を公開する。単項式の線形独立性には群環の基底、整域性には有限自由指数群の既存インスタンスを適用する。
 
-*Needs:* Mathlib の有限自由加群、`AddMonoidAlgebra`、`FractionRing`、`AlgEquiv`、アフィンスキームと構造射。
+新規の比較定理として、格子準同型 f:B→C の既存トーラス射の引き戻しが Xᵇ↦Xᶠ⁽ᵇ⁾ となることを、加法・乗法の群環表示と分数体にわたって統一する。恒等・合成は既存の `groupSchemeMap` の函手性を移す。格子単射から群環と関数体の単射、格子同型からトーラスと関数体の同型を得る。`algHom_ext` と局所化の ext を合わせ、k(B) の自己同型が基底単項式への作用で決まることを証明する。
+
+さらに k(B) と 𝕋_k(B) の scheme functionField の同型を固定し、トーラスの支配的有理写像の等号と関数体の引き戻しの等号が同値であることを証明する。共通の稠密開上の代表には既存 `Scheme.Hom.functionFieldMap` と `ext_of_functionFieldMap_eq` を適用し、Mathlib の有理写像の等号へ戻す。特殊点での値の一致を等号の定義にしない。
+
+*Needs:* Mathlib の有限自由加群、`AddMonoidAlgebra`、`FractionRing`、`AlgEquiv`、アフィンスキーム。Tau Ceti の `DiagonalizableGroup`、`SplitTorus`、`LaurentRing` と `Morphisms/Dominant.lean`。正確な供給範囲は [指標トーラスと変異の契約](#from-tau-ceti-指標トーラスと変異) に記す。
 
 ### 0.2 型付きの語とその解釈
 
-有限ラベル集合上の歪対称整数行列を対象、Conventions の三種の操作を生成辺とする有限路を構成する。始域・終域を保持した連結、逆路、ラベル変更を定義する。各変異が歪対称性を保ち、指定公式が関数体同型を与えることを証明する。分母 Xₖ と 1+Xₖ は独立変数の関数体では非零である。変異公式の出典は [FG] §1.2.2 (7)、§1.2.4 (13) である。
+交換行列は `TauCeti.ExchangeMatrix (Function.Embedding.refl I)` の symmetrizer が定数 1 である部分を用い、本書の歪対称行列 ε との辞書を B=−ε=εᵀ とする。native `YSeed.mutation` は係数 i の更新に Bₖᵢ を用いるため、Bₖᵢ=εᵢₖ により Conventions の X 公式と一致する。この規約比較を公開補題にする。歪対称性の保存、行列変異の対合性・reindex・符号反転との整合性は既存の `ExchangeMatrix.mutation`、`mutation_mutation`、`mutation_reindex` と `matrixMutation_neg` を適用する。
 
-*Needs:* 0.1。整数の正部分の恒等式。
+Conventions の変異・ラベル同定・反転を生成辺とする有限路を構成し、始域・終域を保持した連結と逆路を定義する。変異だけの連続部分には既存 `ExchangeMatrix.mutationWord` と `YSeed.mutationWord` を用い、append・reverse・reindex の結果を継承する。ラベル同定 σ が終域の添字を始域へ送る規約では、native `reindex` に σ.symm を渡す。三種の辺を混ぜた語の解釈と、その端点依存性が本項の追加 API である。
+
+**減算なし有理式との比較。** `YSeed I (Qsf I)` の初期係数を `Qsf.X` とする。既存 `YSeed.mutation_coefficient_of_ne`、`mutation_mutation`、`map_mutation` と語の公式を用い、X 変異の有理式と有限語の代入を得る。`QsfZero.toFractionRing` とその単射性が、これらを `FractionRing (MvPolynomial I ℤ)` の通常の加法・乗法に結び付ける。係数 semifield の加法は ℂ× 上の通常の加法ではないため、ℂ× をそのまま `CoefficientSemifield` として使わない。
+
+**任意体上の解釈。** R_k=`LaurentRing k I`、S_k=R_k[(1+Xₖ)⁻¹] と置く。変異公式の各座標は S_k の単元であり、`LaurentRing.aeval` で R′_k→S_k を得る。1+X′ₖ=(1+Xₖ)/Xₖ も単元なので、標的側の S′_k へ定義域を延長する。まず整数係数の S_ℤ を上の多項式分数体へ単射で入れ、native `YSeed.mutation_mutation` により二つの局所化環準同型の合成が恒等になることを示す。この整数係数の恒等式を S_ℤ→S_k で運び、任意体 k に対する相互逆の局所化環同型と分数体同型を得る。分母 Xₖ と 1+Xₖ の非零性は独立変数の群環表示から供給する。
+
+全 `Qsf I` から k(I) への単射比較は `CharZero k` のもとで別定理とする。正標数では全 Qsf の評価を要求せず、前段の局所化同型を各辺について合成する。従って Layer 0 の関数体上の語は任意体で定義され、最終対象 ℂ ではさらに native Qsf の語との単射比較を使用できる。変異公式の出典は [FG] §1.2.2 (7)、§1.2.4 (13) である。
+
+*Needs:* 0.1。既存 `Algebra/Cluster/ExchangeMatrix/{Mutation,Word}`、`YSeed/{Basic,Word}`、`CoefficientSemifield/Universal`。追加するのは規約の辞書、整数 Laurent 局所化と係数変更、混合した型付き語の解釈である。
 
 ### 0.3 有理写像の群と反転の交換
 
-二度の同じ変異と二度の反転が恒等になること、ςμₖ と μₖς、ςσ と σς がそれぞれ同じ始域・終域と同じ有理写像を持つことを証明する。ここで μₖς の μₖ は始域 ε における変異、ςμₖ の μₖ は −ε における変異であり、行列を固定して交換すると読まない。
+二度の同じ変異が恒等になることは 0.2 の native YSeed と局所化環の比較から得る。二度の反転が恒等になること、ςμₖ と μₖς、ςσ と σς がそれぞれ同じ始域・終域と同じ有理写像を持つことを証明する。反転は B↦−B と係数の逆数化として native 型上に追加し、行列部分には `matrixMutation_neg`、係数部分には `CoefficientSemifield.inv_add_inv` と正負部分の恒等式を使う。ここで μₖς の μₖ は始域 ε における変異、ςμₖ の μₖ は −ε における変異であり、行列を固定して交換すると読まない。
 
-基点 ε でのループの関数体同型の像を部分群として構成し、その反対群を Γ̃ とする。反転のないループの像から Γ を構成する。これは X 有理写像の等号による語の商と同型である。偶数回の反転を含む語を反転なしへ、奇数回の語を最初の一回の反転と反転なしの語へ移す。対象対の表示から得られる種について、偶奇が有理写像だけで決まることを 7.2 で証明する。一般の交換行列にこの結論は仮定しない。[BGM] §3.1 冒頭は反転を加える定義の参照先である。
+基点 ε でのループの関数体同型の像を部分群として構成し、その反対群を Γ̃ とする。反転のないループの像から Γ を構成する。これは X 有理写像の等号による語の商と同型である。native seed の他の変数や同値関係を商の条件に追加せず、0.2 の解釈の X 成分だけを用いる。偶数回の反転を含む語を反転なしへ、奇数回の語を最初の一回の反転と反転なしの語へ移す。対象対の表示から得られる種について、偶奇が有理写像だけで決まることを 7.2 で証明する。一般の交換行列にこの結論は仮定しない。[BGM] §3.1 冒頭は反転を加える定義の参照先である。
 
-*Needs:* 0.2。部分群、群の反対群、同型の像。
+*Needs:* 0.2。部分群、群の反対群、同型の像。既存 `Seed/Reverse.lean` は based seed の交換関係の反転を扱うため、本項の符号反転との比較なしに適用しない。
 
 ### 0.4 電荷核上の単項式の輸送
 
-階数 2 の N の原始電荷列に対して K=ker(v) を取る。変異で v′ₖ = −vₖ、v′ᵢ = vᵢ+[εᵢₖ]₊vₖ と置く。以下の整同型の合成を終域の核に制限し、w:K_end → K_start を構成する。
+階数 2 の N の原始電荷列に対して K=ker(v) を取る。変異で v′ₖ=−vₖ、v′ᵢ=vᵢ+[εᵢₖ]₊vₖ と置く。既存の右因子
+
+    Fₖ = TauCeti.matrixMutationRight (Function.Embedding.refl I) (−ε) k 1
+
+を `Finsupp.basisSingleOne` で線形化して整同型 Bₖ とする。`matrixMutationRight_mul_self` から Fₖ²=1、`matrixMutation_eq_mul` と歪対称性から ε′=Fₖᵀ ε Fₖ を得る。基底上の公式を次の形で公開し、各段の整同型を終域の核へ制限して w:K_end→K_start を構成する。
 
     Bₖ(e′ₖ) = −eₖ,  Bₖ(e′ᵢ) = eᵢ+[εᵢₖ]₊eₖ  (i ≠ k).
     Bσ(e′ᵢ) = e_{σ(i)},  Bς(e′ᵢ) = −eᵢ.
 
-反転では電荷列自体を保ち det を反転するため、Bς は電荷写像を可換にする写像ではなく、単項式の引き戻しを表す。全生成操作について、核上の二項式の指数が零となり Xˣ ∘ F_w = `X^{w(x)}` であることを証明する。連結について `w_{ww′}` = w_w `w_{w′}` とする。さらに電荷列が N を有理的に張る場合に K=ker(v)=ker(ε) を証明する。核の輸送自体はこの追加条件を使わない。これは [FG] の基底変異からの計算であり、詳細は [補足 B](#b-電荷と有限指数) に記す。
+変異では v′=v∘Bₖ を証明する。Fₖ²=1 は固定した交換行列での右因子の恒等式であり、変異後の行列から作った右因子との同一視ではない。反転では電荷列自体を保ち det を反転するため、Bς は電荷写像を可換にする写像ではなく、単項式の引き戻しを表す。
 
-*Needs:* 0.1–0.3。整数行列の核、有限自由加群の線形同型。
+全生成操作について、核上の二項式の指数が零となり Xˣ∘F_w=`X^{w(x)}` であることを証明する。連結について `w_{ww′}`=w_w `w_{w′}` とする。さらに電荷列が N を有理的に張る場合に K=ker(v)=ker(ε) を証明する。核の輸送自体はこの追加条件を使わない。これは [FG] の基底変異からの計算であり、詳細は [補足 B](#b-電荷と有限指数) に記す。
+
+*Needs:* 0.1–0.3。既存 `Algebra/Cluster/ExchangeMatrix/Factorization.lean`、整数行列の核、有限自由加群の線形同型。quantum compatible form の `formMutation` とは仮定が異なり、本項では上の右因子と交換行列の因数分解を使う。
 
 ### 0.5 境界付値を記録する整数列
 
-初期整数列 b を、変異で次のように更新する写像を定義する。置換では `b′ᵢ=b_{σ(i)}`、反転では b′ᵢ=−bᵢ とする。
+整数列 b を、既存 `TauCeti.YSeed I (TauCeti.InfTropical ℤ)` の係数 `InfTropical.ofAdd (bᵢ)` と交換行列 B=−ε で表す。更新は native `YSeed.mutation` の指数表示として定義し、`toAdd` の計算により次の公式を得る。置換では `b′ᵢ=b_{σ(i)}`、反転では b′ᵢ=−bᵢ とする。
 
     b′ₖ = −bₖ,
     b′ᵢ = bᵢ+[εᵢₖ]₊bₖ−εᵢₖ min(0,bₖ)  (i ≠ k).
 
-更新の合成と逆操作の整合性を証明する。これが実際の境界因子の付値を輸送することは 5.5 の目標であり、任意の付値で ord(1+f)=min(0,ord(f)) を仮定しない。[GHK-C] (1.4) の境界付値による熱帯化との対応を証明する。
+変異の対合性と有限列の連結・逆語は `YSeed.mutation_mutation` と `YSeed.Word` の既存結果を指数表示へ移し、反転を含む操作との整合性は 0.3 の係数 semifield 上の補題から得る。有限個の付値を同時に記録する際は `Trop J=InfTropical (J→₀ℤ)` とし、`YSeed.toExtendedMatrix_mutation` により frozen row としての行列更新にも一致することを公開する。
 
-*Needs:* 0.2。整数の順序・最小値。
+これが実際の境界因子の付値を輸送することは 5.5 の目標であり、任意の付値で ord(1+f)=min(0,ord(f)) を仮定しない。[GHK-C] (1.4) の境界付値による熱帯化との対応を証明する。
+
+*Needs:* 0.2–0.3。既存 `CoefficientSemifield/Tropical.lean`、`YSeed/{Basic,Word,Geometric}.lean`。整数表示と境界付値への比較を追加する。
 
 ### Examples
 
@@ -93,32 +113,36 @@ Ĝ の積は成分ごとの積である。格子の等長変換 g と境界の�
 
 ### Dependencies
 
-0.1 → 0.2 → 0.3、0.1–0.3 → 0.4、0.2 → 0.5。曲面の存在はこのレイヤーの仮定にしない。
+0.1 → 0.2 → 0.3、0.1–0.3 → 0.4、0.2–0.3 → 0.5。曲面の存在はこのレイヤーの仮定にしない。
 
 ## Layer 1: 境界格子と向きの反転
 
 ### 1.1 サイクル交点行列と飽和
 
-有限自由整数加群 L に非退化な単模対称形式を置く。n≥1、δ=ΣDⱼ を原始的特性元とし、次を仮定する。
+有限自由整数加群 L と対称形式 B を取り、単模性を既存の `B.IsPerfPair`、δ=ΣDⱼ の原始性を `TauCeti.IsPrimitive δ`、特性元条件を `B.IsCharacteristic δ` で表す。n≥1 とし、次を仮定する。
 
     Dᵢ·Dⱼ = −2[i=j]+[j=i+1]+[j=i−1],
     x² ≡ x·δ  (mod 2)  (x ∈ L).
 
-角括弧は各等式の指示値である。Dⱼ の一次独立性、δ²=0、M∩M⊥=ℤδ、M_Q+(M⊥)_Q=δ⊥_Q を証明する。Mˢ=(M⊗ℚ)∩L に対し、Mˢ/M が位数 t の巡回群で t|n となることを、サイクルの差分方程式から導く。
+角括弧は各等式の指示値であり、n=1,2 でも二つの隣接項を個別に数える。M は `Submodule.span ℤ (Set.range D)`、M⊥ は `B.orthogonal M` とする。Dⱼ の一次独立性、δ²=0、M∩M⊥=ℤδ、M_Q+(M⊥)_Q=δ⊥_Q を証明する。有理化と整数 carrier の比較は既存 `IntegralLattice.ofIntegralForm` と `ofIntegralForm.carrierIsometry` に接続し、Mˢ=(M⊗ℚ)∩L を構成する。サイクルの係数指標の差分方程式から、Mˢ/M が位数 t の巡回群で t|n となることを示す。
 
-さらに L の符号数が (1,9) なら、δ⊥/ℤδ は階数 8 の負定値偶単模格子、M/ℤδ は `A_{n−1}(−1)` であり、t²|n、n≤9 を証明する。偶単模格子の全分類は使用しない。[補足 A](#a-境界格子の整数計算) の整数計算を証明目標とする。
+さらに L の符号数が (1,9) なら、δ⊥/ℤδ は階数 8 の負定値偶単模格子、M/ℤδ は `A_{n−1}(−1)` であり、t²|n、n≤9 となる。ここでは原始性と完全双対から、境界各成分への交点を指定しない f₁·δ=1 なる元を取り、特性元条件により f₀=f₁−((f₁²+1)/2)δ を平方 −1 に補正する。U₀=ℤδ⊕ℤf₀ の完全な制限形式に既存の直交分解定理を適用して δ⊥/ℤδ≅U₀⊥ を得る。この構成は 1.2 の境界に適合する f を使わない。
 
-*Needs:* 有限自由加群の双対、原始部分加群、飽和、直交補、Smith 標準形、Gram 行列式。
+A 型格子との比較は、商の基底と負の Cartan 行列を作り、形式の符号を反転して `IntegralLattice.Isometry.ofGramMatrixEq` を適用する。標準格子の `discriminant_typeARootLattice` と、整数 overlattice の `IntermediateCarrier.IsIntegral.index_sq_dvd_discriminant` が判別式 n と指数平方の整除を供給する。本項の新規部分はサイクルの係数計算、商の形式と基底、標準 A 型への等長同型、飽和指数の比較、および符号数からの階数制約である。A 型の行列式計算、指数平方公式、原始元の基底延長を再証明しない。[補足 A](#a-境界格子の整数計算) に接続手順を記す。
+
+*Needs:* Mathlib の有限自由加群・完全双対・商・直交補、Tau Ceti の `IsPrimitive`、`BilinForm.IsCharacteristic`、有理化、A 型格子・overlattice の既存 API。飽和からの torsion-free 商と直和因子の比較には `Submodule.isTorsionFree_quotient_iff`、`Submodule.exists_isCompl_iff_isTorsionFree_quotient` を用いる。
 
 ### 1.2 鏡映を持ち上げる対合
 
-1.1 の符号数を仮定しない部分の条件の下で、ある j₀ と f∈L が存在して f²=−1、f·Dⱼ=[j=j₀] となることを証明する。U=ℤδ⊕ℤf の Gram 行列は [[0,1],[1,−1]] であり、L=U⊕U⊥ となる。
+1.1 の符号数を仮定しない部分の条件の下で、ある j₀ と f∈L が存在して f²=−1、f·Dⱼ=[j=j₀] となることを証明する。係数指標 χⱼ の計算で j₀ を選び、Mˢ 上の整数線形形式を構成する。`Submodule.isTorsionFree_quotient_iff` と `Submodule.exists_isCompl_iff_isTorsionFree_quotient` により Mˢ の補部分加群を取り、その射影を合成して形式を L へ延ばす。完全双対の逆 `B.toPerfPair.symm` と特性元条件が平方 −1 の f を与える。新規に証明するのは χⱼ₀ が零となる成分の存在と、得た f の全境界交点である。
 
-j₀ 以外の境界類の反射が生成する A 型の対称群の最長元 w₀ を構成し、`g₀=id_U⊕(−w₀|_{U⊥})` と置く。g₀ は対合的等長変換で、f、δ を固定し、Dⱼ を `D_{2j₀−j}` に移し、κ∈M⊥ に対し g₀κ=−κ+2(κ·f)δ を満たす。f は格子の元として構成し、楕円曲面の切断や実際の例外曲線を仮定しない。
+U=ℤδ⊕ℤf の Gram 行列 [[0,1],[1,−1]] から制限形式の完全性を確認し、既存 `LinearMap.BilinForm.isCompl_orthogonal_of_restrict_bijective` で L=U⊕U⊥ を得る。U⊥ の完全性も `isPerfPair_restrict_of_isCompl_orthogonal` と二重直交補の定理から得る。f は格子の元であり、曲線の有効性や切断の存在を追加条件にしない。
 
-この主要な格子定理を `exists_cycle_reversing_involution` として [Suggested.lean](Suggested.lean) に述べる。証明は [補足 A](#a-境界格子の整数計算) の飽和と座標反転による。
+j₀ 以外の境界根の反射を、既存 `Module.reflection` と形式を保つ反射の API で構成する。根の平方は −2 なので、平方 +2 を入力とする `IntegralLattice.rootReflection` を使う場合は形式の符号を反転する。負の A 型格子と既存 `typeAIsometryZeroSumLattice` を結び、単純根の反射が隣接互換になることを示す。順序反転の置換に対応する w₀ を取り、`g₀=id_U⊕(−w₀|_{U⊥})` と置く。g₀ は対合的等長変換で、f、δ を固定し、Dⱼ を `D_{2j₀−j}` に移し、κ∈M⊥ に対し g₀κ=−κ+2(κ·f)δ を満たす。n=1 では反射語を空とする。
 
-*Needs:* 1.1。整数値双対の延長、単模直交分解、隣接互換による対称群。
+この主要定理を `exists_cycle_reversing_involution` として [Suggested.lean](Suggested.lean) に、既存の整数加群・形式・等長同型と原始性・特性元の述語を直接使って述べる。[補足 A](#a-境界格子の整数計算) のサイクルから標準 A 型への比較と境界作用が新規の証明であり、整数値双対の延長、一般の直交分解、標準 A 型の座標和零模型は既存結果を適用する。
+
+*Needs:* 1.1。`Submodule` の飽和と補部分加群、`B.toPerfPair`、`BilinForm` の完全制限と直交分解、`IntegralLattice` の有理化・Gram 行列による等長同型・A 型座標模型、反射と有限置換の既存 API。
 
 ### 1.3 符号を保持した境界等長群
 
@@ -146,79 +170,105 @@ L の等長変換で M⊥ と各 Dⱼ を点ごとに固定するものは恒等
 
 ### 2.0 曲線・曲面のコホモロジーと Euler 標数
 
-ℂ 上の次元 ≤2 の射影スキーム X と coherent sheaf F に対し、各 Hⁱ(X,F) の有限次元性、i>dim(supp F) での消滅を証明する。非被約曲線・有限厚化も含める。豊富線束 A について、十分大きな m で F⊗Aᵐ が大域生成され、全ての i>0 のコホモロジーが消滅することを証明する。既存の有限射の coherent pushforward と閉埋込のコホモロジー比較を再利用し、一般の有限射のコホモロジー比較と射影公式を、正規化と曲線次数に使える形で供給する。有限射の比較は有限アフィン被覆上の Čech 複体の各項の比較から得る。
+ℂ 上の次元 ≤2 の射影スキーム X と coherent sheaf F に対し、各 Hⁱ(X,F) の有限次元性、i>dim(supp F) での消滅を供給する。非被約曲線・有限厚化も含める。豊富性には既存 `LineBundleClass.IsAmple` を用い、豊富線束 A の十分大きな全ての冪について F⊗Aᵐ の大域生成と i>0 のコホモロジー消滅を得る。これらは既存のスキーム・層コホモロジー上の定理として追加し、対象対固有の公理にしない。
 
-既存の層コホモロジーと長完全列を用い、χ を `AlgebraicGeometry.Scheme.Modules.eulerCharBelow` に接続する。切断次数は曲面で 3、曲線で 2 とし、有限次元性と次の次数の消滅を供給して既存の加法性を適用する。χ の同型不変性、短完全列での加法性、有限台の層の χ が長さの和となることを公開する。
+組立ての入力には、既存の射影空間の全次数 cohomology、`Proj.eventually_exists_epi_free_tensor_twistingSheaf` による有限直和 O(−p)ʳ→F の全射、`Scheme.Modules.isFinitePresentation_kernel` による coherent kernel の閉性を使う。全射の定理の仮定は quasi-compact な Proj、次数 1 の basic opens による被覆、F の quasi-coherence と finite type であり、kernel の定理には局所 Noetherian 性を渡す。射影埋込先 ℙᴺ の N は任意でよい。`Module.Basis.finite_cohomology_twistingSheaf` は任意の基底環上で全ての O(d) の cohomology の有限生成性を供給し、`nonempty_linearEquiv_cohomology_top_twistingSheaf` と `nonempty_linearEquiv_cohomology_top_twistingSheaf_dual` は最上次数も計算する。従って ℙ² の上次数を別に再構成する必要はない。これらを有限 resolution の必要な長さと次元シフトへ接続し、[Debarre-S] Theorem 2.28、Corollary 2.29、Theorem 2.37、Corollary 2.38 の証明を実装する。
 
-証明入力は、アフィン上の quasi-coherent cohomology の消滅、有限アフィン被覆による Čech 比較、射影空間の O(d) の計算、coherent kernel、十分大きな twist の section の延長である。有限直和 O(−p)ʳ→F の全射と次元シフトを構成し、[Debarre-S] Theorem 2.28、Corollary 2.29、Theorem 2.37、Corollary 2.38 の証明へ接続する。射影埋込に使う ℙᴺ の N は任意とし、ℙ¹・ℙ² では既存の H⁰・中間消滅・ℙ¹ の計算を再利用し、残る ℙ² の上次数を計算する。coherent kernel の有限性は Noetherian affine 上の既存結果を開制限と局所性で貼り合わせる。支持次元の消滅には、ann(F) が定める閉部分スキームへ F を移し、次元 d の射影スキームが d+1 本の超平面の補集合で覆えることを使う。これは高々三つのアフィン開による被覆であり、Čech 複体の次数上界が必要な消滅を与える。これらの入力の必要部分も本項の実装目標とする。
+大域生成の section 延長には既存 `Scheme.Modules.eventually_exists_generatingSections_tensor_tensorPow` を使う。この定理は一つの線束 L 自身の section の affine nonvanishing loci による被覆を要求する。一般の `IsAmple` からは、既存の有限被覆抽出 `IsAmple.exists_finset_isAffineOpen_nonvanishingLocus` を取り、有限個の正の指数の共通倍数と section の冪を使ってこの仮定を供給する。指数を共通倍数で割った有限個の剰余類の twist も扱い、十分大きい全ての m での主張にする。高次消滅には、一般の豊富 A を射影埋込みの twist へ結ぶ補題も供給する。固定した very ample H に対して Aʳ⊗H⁻¹ の有限大域生成を正の r で得て、H の埋込みと生成 section の定める射の積を、既存 `AlgebraicGeometry.Proj.segre` の閉埋込みへ合成する。この閉埋込みが Aʳ を O(1) の引き戻しとすることを証明する。従って F⊗Aʲ（0≤j<r）の各々に、この埋込みでの resolution と既存 O(d) の高次消滅を適用すれば、十分大きい全ての m で F⊗Aᵐ の高次消滅を得る。Aʳ の very ampleness と twist の同定は本項の橋渡しであり、Serre vanishing を先に仮定しない。
 
-*Needs:* Mathlib と Tau Ceti のスキーム、層加群、coherent sheaf、層コホモロジー、短完全列と長完全列、射影空間・twisting sheaf の既存の型。有限性と消滅は既存の `finrank` の定義から仮定せず、ここで供給する。
+支持次元の消滅には、既存 `Scheme.Modules.exists_iso_pushforward_subschemeι_annihilator` で F を ann(F) の閉部分スキームからの pushforward に移す。新規に、次元 d≤2 の射影スキームを d+1 本の超平面の補集合で覆う補題を供給する。そこへ既存 `Scheme.Modules.subsingleton_cohomology_of_isAffineOpen_of_card_le` を適用する。separated 性から affine diagonal を、F から quasi-coherence を渡す。有限台では既存 `Scheme.Modules.isFinite_subschemeι_annihilator_comp` により支持スキームが ℂ 上有限であることを得て、有限加群の局所長への分解と χ の長さ公式を接続する。
+
+有限射 f の全次数比較は、有限射が affine であることから既存 `Scheme.Hom.cohomologyPushforwardBaseLinearEquivOfIsAffineHom` をそのまま用いる。係数が quasi-coherent で、f と両スキームが同じ基底環上にあることを保持し、基底環線形な比較 Hⁱ(Y,f_*F)≃Hⁱ(X,F) を使う。線束に対する射影公式は `InvertibleSheaf.toFiniteLocallyFree` を通した既存 `FiniteLocallyFreeSheaf.pushforwardTensorLeftIso` と `tensorPushforwardUnitIso` を用いる。これらのために別の Čech 比較や有限射専用の射影公式を作らない。
+
+χ は `AlgebraicGeometry.Scheme.Modules.eulerCharBelow` に統一する。切断次数は曲面で 3、曲線で 2 とし、本項の有限性と次の次数の消滅を渡して既存の同型不変性・短完全列での加法性を使う。有限性と消滅を `finrank` の定義から仮定しない。
+
+*Needs:* Mathlib と Tau Ceti の native スキーム・層加群、coherent sheaf、層 cohomology、長完全列、Proj と twisting sheaf。共有する有限性・消滅の必要部分は SchemeAndStackFoundations §2.6 の型と基底射に合わせて追加する。
 
 ### 2.1 曲面、因子、線束、交点
 
-滑らかな射影複素曲面を扱う。本項に有理性は不要である。Pic(Y) は既存 `TauCeti.AlgebraicGeometry.LineBundleClass` の加法表記とし、既存の Cartier 因子からの準同型と Cartier 類群との同型を利用する。有効因子と非零 section、有効線束類の対応、曲線への制限、標準束 ω_Y=∧²Ω¹_Y、引き戻しの函手性を整備する。既約曲線が Cartier 因子になるために必要な、二次元正則局所環の高さ 1 の素イデアルの主性も証明対象とする。
+滑らかな射影複素曲面を扱う。本項に有理性は不要である。Pic(Y) は既存 `TauCeti.AlgebraicGeometry.LineBundleClass` の加法表記とし、Cartier 因子からの準同型と Cartier 類群との同型を利用する。有効因子・非零 section・有効線束類の対応、曲線への制限、引き戻しの函手性は既存の層・因子 API に接続する。標準束 ω_Y は native `differentialForms` の次数 2 とし、`isInvertible_differentialForms` と `differentialFormsIsoDet` を滑らかな相対次元 2 の構造射へ適用する。既約曲線の Cartier 性には、native 正則性と全点の coheight≤2 を渡して `Scheme.IdealSheafData.isEffectiveCartier_vanishingIdeal_closure_singleton_of_isRegular` を使う。二次元正則局所環の高さ 1 の素イデアルの主性は既存の供給である。
 
-曲面上の整数値交点 B:Pic(Y)×Pic(Y)→ℤ を構成し、任意の閉じた整曲線 i:C→Y について B(x,[C]) が既存 `LineBundleClass.intersectionNumber` による制限次数と一致することを証明する。C を滑らかと仮定しない。有限正規化 ν:C̃→C に対し、O_C→ν_*O_C̃ の余核 Q は有限台を持ち、Q と Q⊗L の長さが等しいことから、
+交点 B:Pic(Y)×Pic(Y)→ℤ は既存 `Chow.classIntersectionNumber` の加法表記とする。その定義は
+
+    B(L,M)=χ(O_Y)−χ(L⁻¹)−χ(M⁻¹)+χ(L⁻¹⊗M⁻¹)
+
+で、χ の切断次数は 3 である。Picard 類への降下、同型不変性、対称性は既存定理を用い、2.0 によりこの切断和が実際の Euler 標数であることを保証する。別の Picard 群、数値同値、交点の carrier を作らない。
+
+新規の主要な比較は、任意の閉じた整曲線 i:C→Y に対して
+
+    B(x,[C])=LineBundleClass.intersectionNumber ℂ i x
+
+となることである。C の滑らかさは仮定しない。O_Y(−C)→O_Y→O_C とその線束 twist の完全列、2.0 の χ 加法性、既存の singular integral curve 上の Euler 次数加法性を用いる。`toInvertibleSheaf` が有効 Cartier ideal O(−C) を表す場合、[C] にはその逆元を使う。一般の線束を Cartier 素因子の整数和で表す。`B(L,M⊗O(C))−B(L,M)=χ(M⁻¹|C)−χ((L⊗M)⁻¹|C)=deg_C L` という差の公式を整数回反復して B の双線形性を証明する。B 自体を素因子和として再定義して降ろす経路は採らない。
+
+制限次数の加法性には `LineBundleClass.intersectionNumber_mul_of_isClosedImmersion` を用いる。仮定は C が integral、i が閉埋込、Y が ℂ 上 proper、dim C=1、および基底射の一致であり、特異曲線にも適用できる。局所交点長との一致には `intersectionNumber_inv_mk_toInvertibleSheaf_eq_finsum_of_isClosedImmersion` を使い、相異なる曲線が適切に交わることと ℂ 上の residue degree が 1 であることを渡す。相異なる素因子の非負性は `intersectionNumber_inv_mk_toInvertibleSheaf_nonneg_of_ne` を B の比較へ輸送する。射影公式についても既存の finite-flat 曲線版を使える場合は直接適用し、特異曲線への有限正規化のように flatness がない場合はその仮定を追加してしまわない。
+
+有限正規化 ν:C̃→C による次数比較が必要な箇所には、既存の conductor cokernel Q とその有限台・cohomology 消滅、2.0 の affine pushforward 比較と射影公式を組み合わせる。有限台に対する既存 `Scheme.Modules.eulerCharBelow_tensor_of_finite_support` に `InvertibleSheaf.toFixedRankOne` を渡して χ(Q⊗L)=χ(Q) を得る。正規化完全列とその twist の χ を比較して
 
     deg_C(L)=χ(C,L)−χ(C,O_C)=deg_C̃(ν*L)
 
-を導く。これにより正則曲線上の既存の次数加法性を全ての整曲線へ移す。Cartier 因子の素因子和で交点を定め、主因子で値が零となることを示し、既存 Cartier–Picard 同型で線束類上へ降ろす。
+を得る。この補題は再利用可能な正規化比較として公開する。整曲線上の次数加法性は既存なので、その証明を再びこの経路で構成しない。
 
-双線形性、対称性、射影公式、局所交点長 length(O_Y,p/(f,g)) との一致、相異なる既約曲線の交点の非負性を証明する。nef は全既約曲線との交点の非負性、豊富は線束の豊富性として定義する。有効因子 D の台の各成分 C で D·C≥0 なら D が nef となる補題も得る。Pic(Y) の有限自由性・単模性はここでは仮定せず、有理曲面への適用で証明する。次数と交点の構成は [Debarre-S] §3.2, Definition 3.5、Theorem 3.6、Lemma 3.7 を参照する。
+nef は全既約曲線との B の非負性、豊富は native `LineBundleClass.IsAmple` とする。有効因子 D の台の各成分 C で D·C≥0 なら D が nef であることを、既存の異なる成分間の非負性から得る。Pic(Y) の有限自由性・単模性は有理曲面への適用で証明する。degree comparison と bilinearity は SchemeAndStackFoundations §5.9 の native surface pairing を拡張する形で供給する。[Debarre-S] §3.2, Definition 3.5、Theorem 3.6、Lemma 3.7 を参照する。
 
-*Needs:* 2.0。既存の `AlgebraicGeometry.Scheme`、局所環、Cartier 因子、線束、`LineBundleClass.pullback`、曲線の Euler 次数。有限正規化と有限台の長さの必要な曲線版を含む。
+*Needs:* 2.0。native Cartier–Picard 同型、最高次微分形式、正則曲面の素因子 Cartier 性、特異整曲線の Euler 次数と制限交点、conductor の既存 API。
 
 ### 2.2 点 blowup と共通解消
 
-滑らかな射影複素曲面の閉点 p の ideal sheaf による blowup を構成する。有理性や境界は仮定しない。正則パラメータ u,v に対する二つの chart R[t]/(v−ut)、R[s]/(u−sv) で例外曲線と固有変換を記述する。例外曲線 E≅ℙ¹、O_E(E)≅O(−1)、blowup の滑らかさ・射影性、および
+滑らかな射影複素曲面の閉点 p の blowup には、既存 `Scheme.IdealSheafData.blowup` を用いる。有理性や境界は仮定しない。generic affine chart とその被覆、中心 ideal の pullback が effective Cartier となること、局所 Noetherian スキーム上の blowup の properness、中心外同型は既存 API を使用する。本項ではこれらを正則パラメータ u,v の chart R[t]/(v−ut)、R[s]/(u−sv) と比較し、例外曲線 E≅ℙ¹、O_E(E)≅O(−1)、blowup の滑らかさ・射影性、および
 
     Pic(Bl_p Y)=π*Pic(Y)⊕ℤE,  E²=−1,
     (π*x)·E=0,  K_{Bl_p Y}=π*K_Y+E
 
-を証明する。有限列では全変換の例外類を用いて直交基底を維持する。境界の滑らかな点の blowup では被約反標準境界は D′=π*D−E で E を含まない。節点の blowup では D′=π*D−E が固有変換と E の和となる。自己節点でも二枝を数える。
+を native Picard と 2.1 の交点について証明する。例外曲線上の線束同定には既存 `projectiveLine.picardDegreeEquiv` と `nonempty_iso_twistingSheaf_iff` を使う。有限列では全変換の例外類を用いて直交基底を維持する。境界の滑らかな点の blowup では被約反標準境界は D′=π*D−E で E を含まない。節点の blowup では D′=π*D−E は固有変換と E の和となる。自己節点でも二枝を数える。
 
-線束 L の引き戻しは Hⁱ(Y,L)≅Hⁱ(Bl_p Y,π*L) を与えることを、二 chart の局所 Čech 計算と大域比較から証明する。全整数 m について例外曲線の完全列を構成し、
+線束の cohomology 比較には一般の比較機構を追加しない。二 chart の局所計算で π_*O=O と Rⁱπ_*O=0（i>0）を供給し、既存 `FiniteLocallyFreeSheaf.higherDirectImagePullbackIso` と `isZero_higherDirectImage_pullback` を使って π*L に移す。通常の射影公式で π_*π*L≅L と同定した上で、`Scheme.Hom.cohomologyPushforwardBaseLinearEquivOfIsZeroHigherDirectImage` から基底体線形な Hⁱ(Y,L)≅Hⁱ(Bl_p Y,π*L) を得る。全整数 m について例外曲線の完全列を構成し、
 
     0→π*L((m−1)E)→π*L(mE)→L_p⊗O_{ℙ¹}(−m)→0,
     χ(π*L(mE))=χ(L)+m(1−m)/2
 
-を得る。正整数 m に限った帰納にせず、ℙ¹ の χ(O(d))=d+1 から両方向の漸化式として証明する。
+を得る。既存の ℙ¹ の全次数計算から χ(O(d))=d+1 を取り、正整数 m に限らず両方向の漸化式として証明する。
 
-曲面の指定された双有理写像の基点を有限回の点 blowup で解消し、二つの射を支配する共通解消を構成する。相異なる点の blowup の交換、有限個の節点 blowup 列の共通細分、指定した例外曲線の縮約後の射の降下を証明する。[Stacks] Tags 0C5R、0C5S の滑らかな射影曲面の特殊形を対象とする。基点を持つ線形系の解消では、固定成分を除いた後の交点数の減少を停止の根拠とする。正則双有理射の分解は [Stacks] Tag 0C5R の例外線の conormal O(1) と正規な標的への proper quasi-finite 射による証明を用い、後の符号数や一般の (−1) 曲線縮約を先に仮定しない。
+曲面の指定された双有理写像の基点を有限回の点 blowup で解消し、二つの射を支配する共通解消を構成する。相異なる点の blowup の交換、有限個の節点 blowup 列の共通細分、指定した例外曲線の縮約後の射の降下を供給する。下降には既存 `Scheme.Hom.existsUnique_comp_eq_of_universallyClosed` を用い、収縮射の properness・surjectivity、全開集合での構造層の section map が同型であること、降ろす射が各 fibre で一定であることを渡す。収縮射の存在をこの下降定理から仮定しない。
 
-*Needs:* 2.1。`AlgebraicGeometry.Scheme.IdealSheafData.blowup` とその普遍性、滑らかな二次元局所環のパラメータ。
+共通解消と正則双有理射の分解は [Stacks] Tags 0C5R、0C5S の滑らかな射影曲面の特殊形を対象とする。基点を持つ線形系の解消では固定成分を除いた後の交点数の減少を停止の根拠とする。正則双有理射の分解は Tag 0C5R の例外線の conormal O(1) と正規な標的への proper quasi-finite 射による証明を用いる。後の符号数や任意の (−1) 曲線の縮約を先に仮定しない。
+
+*Needs:* 2.1。native blowup と普遍性・chart・exceptional ideal・中心外同型、ℙ¹ の線束分類、高次射影公式と acyclic pushforward 比較、morphism の下降。点 blowup の局所計算、Picard 分解、discrepancy、基点解消は本項に残る。
 
 ### 2.3 有理曲面の数値的定理
 
-滑らかな射影有理曲面について h¹(O_Y)=h²(O_Y)=0、χ(O_Y)=1、Pic(Y) が有限自由、交点形式が単模、rank Pic(Y)+K_Y²=10 であることを証明する。有理性は ℙ² との双有理性で扱い、既存 `Scheme.IsRationalOver` との比較には曲面の次元からアフィン空間の添字数が 2 となる補題を置く。ℙ² の計算、2.2 の Picard 直交分解とコホモロジー比較、共通解消を使い、最小有理曲面の分類を先に仮定しない。
+滑らかな射影有理曲面について h¹(O_Y)=h²(O_Y)=0、χ(O_Y)=1、Pic(Y) が有限自由、交点形式が単模、rank Pic(Y)+K_Y²=10 であることを証明する。有理性は ℙ² との双有理性で扱い、既存 `Scheme.IsRationalOver` との比較には曲面の次元からアフィン空間の添字数が 2 となる補題を置く。ℙ² の既存の全次数 cohomology、2.2 の Picard 直交分解と cohomology 比較、共通解消を使い、最小有理曲面の分類を先に仮定しない。
 
-任意の線束類 x と既約曲線 C に対し、
+任意の線束類 x と既約曲線 C に対し、native の Euler 標数・交点・標準束について
 
     χ(O_Y(x))=1+(x²−x·K_Y)/2,
     h²(O_Y(x))=h⁰(O_Y(K_Y−x)),
     2p_a(C)−2=C²+C·K_Y
 
-を証明する。Riemann–Roch は ℙ² の O(d) の計算と 2.2 の全整数 m の Euler 漸化式により点 blowup の両方向へ移し、共通解消で有理曲面へ移す。これから x²≡x·K_Y mod 2 も得る。[Hacking-S] Theorems 5.2–5.3、[Stacks] Tag 0FVV(6),(7) が主張の参照先である。
+を証明する。Riemann–Roch は ℙ² の O(d) の既存計算と 2.2 の全整数 m の Euler 漸化式により点 blowup の両方向へ移し、共通解消で有理曲面へ移す。x²≡x·K_Y mod 2 も得る。この rational-surface slice は SchemeAndStackFoundations §5.10 の型へ整合させ、対象の反標準サイクルを仮定しない独立定理として公開する。[Hacking-S] Theorems 5.2–5.3、[Stacks] Tag 0FVV(6),(7) が主張の参照先である。
 
-上次数の双対性には、χ の式とは別に完全 pairing H²(L)×H⁰(ω_Y⊗L⁻¹)→ℂ を構成する。ℙ² の Čech 単項式の係数から trace を作り、点 blowup の標準束公式で trace を移す。例外曲線の twist 完全列の connecting map と双対 twist の restriction map が、ℙ¹ の residue pairing の下で互いに随伴であることを二 chart で証明する。m≤1 では H¹(O_E(−m))=0、m≥2 では H² 側の cokernel と H⁰ 側の kernel の双対性を使い、全 m へ完全性を移す。m=0 の比較で逆向きへも移せるため、共通解消に沿って対象曲面へ降ろせる。この pairing の可換性を独立した補題として公開し、数値的 Euler 漸化式だけで代用しない。
+上次数の双対性には完全 pairing H²(L)×H⁰(ω_Y⊗L⁻¹)→ℂ を構成する。ℙ² の最上次数の単項式・双対加群との線形同型は既存 `Module.Basis.nonempty_linearEquiv_cohomology_top_twistingSheaf` と `Module.Basis.nonempty_linearEquiv_cohomology_top_twistingSheaf_dual` から利用する。ただしこれらは選ばれた同型の存在であり、trace・cup product・境界写像との可換性を結論しない。本項では `ω_{ℙ²}≅O(−3)` と既存 cohomology との比較の下で Čech 単項式の係数による trace を指定し、点 blowup の標準束公式で輸送する。例外 twist の connecting map と双対 twist の restriction map が、ℙ¹ の residue pairing の下で互いに随伴であることを二 chart で証明する。m≤1 では H¹(O_E(−m))=0、m≥2 では H² 側の cokernel と H⁰ 側の kernel の双対性を用いて全 m へ完全性を移す。m=0 の比較で逆向きにも移せるので、共通解消に沿って対象曲面へ降ろせる。この pairing の可換性を独立した補題として公開し、χ の数値式だけで代用しない。
 
-算術随伴は O(−C)→O→O_C の完全列から導く。正規化の種数と有限台の余核の長さから p_a(C)≥0 を示す。p_a(C)=0 なら C は滑らかで、滑らかな点 p に対する O_C→O_C(p) の完全列から二つの section を得て、有限次数 1 の C→ℙ¹ を構成する。従って C≅ℙ¹ である。高次元の Riemann–Roch や全 coherent sheaf の双対性は本項の目標に含めない。
+算術随伴は O(−C)→O→O_C の完全列から導く。C の正規化と種数の関係には既存 `Scheme.genus_eq_add_finrank_globalSections_cokernel_of_surjective` を用い、ℂ 上の proper integral curve の大域関数が定数であることを渡す。`p_a(C)=h¹(O_C)` とこの式から p_a(C)≥0 を得る。p_a(C)=0 なら正規化の genus と conductor cokernel の H⁰ がともに零であり、既存 `finrank_globalSections_cokernel_unitToPushforwardObjUnit_eq_zero_iff_isIso` によって正規化が同型となる。正則性から ℂ 上の滑らかさを得て、既存 `IsLocallyClosed.exists_rationalPoint_mem` を ℂ 上の全体集合へ適用して rational point を取り、`Scheme.exists_iso_projectiveLine_of_genus_eq_zero_of_section` に渡し、ℂ 上の実際の C≅ℙ¹ を得る。二 section による射の構成や genus-zero 分類を別に再証明しない。
 
-*Needs:* 2.0–2.2。ℙ¹・ℙ² の Čech 計算、cup product と trace、線束の双対と制限。
+*Needs:* 2.0–2.2。ℙ¹・ℙ² の既存全次数 cohomology、native top differential forms と線束の双対、正規化・conductor の genus-drop と iso 判定、genus-zero curve の分類。新規に残るのは rational-surface 数値定理、blowup と整合する trace pairing、算術随伴への接続である。
 
 ### 2.4 正錐、豊富性、曲線の縮約
 
-滑らかな射影有理曲面について、ℙ² との共通解消と 2.2 の直交分解から、実 Picard 空間の交点形式の符号数が (1,ρ−1) であることを証明する。豊富類が選ぶ正錐成分、その閉包、非零の nef 等方類との交点による成分の識別を構成する。正錐の同じ閉包に属する類の交点の非負性も証明する。
+滑らかな射影有理曲面について、ℙ² との共通解消と 2.2 の直交分解から、実 Picard 空間の交点形式の符号数が (1,ρ−1) であることを証明する。豊富類が選ぶ正錐成分、その閉包、非零の nef 等方類との交点による成分の識別を構成する。正錐の同じ閉包に属する類の交点の非負性も証明する。直交和の階数・符号数には格子の既存 API を使い、上記の正錐の識別と交点不等式はこの形式への適用として証明する。
 
-滑らかな射影有理曲面上の整数類 h が h²>0 かつ全既約曲線 C で h·C>0 を満たすことと、h が豊富であることの同値を証明する。[Debarre-S] §4.1, Theorem 4.1 の曲面における証明を、有効性、H¹ の次元の安定化、大きな冪の大域生成、有限射による豊富性の引き戻しに分ける。この証明に現れる有効因子は特異・非被約の場合を含むため、その各既約成分上の次数が正なら制限線束が豊富である一次元の定理も証明する。正規化と conductor の有限台、nilpotent ideal の有限 filtration、2.0 の消滅と大域生成を用いて被約成分から厚化へ移す。豊富類と nef 類の和の豊富性、豊富錐の開性、負の既約曲線の有効曲線錐の閉包での極線性を独立した補題として得る。
+滑らかな射影有理曲面上の整数類 h が h²>0 かつ全既約曲線 C で h·C>0 を満たすことと、native `LineBundleClass.IsAmple h` の同値を証明する。[Debarre-S] §4.1, Theorem 4.1 の証明を、有効性、H¹ の次元の安定化、大きな冪の大域生成、有限射による豊富性の引き戻しに分ける。一次元の入力では、正規化の滑らかな成分上の高次数 H¹ 消滅と大域生成に既存 `InvertibleSheaf.subsingleton_cohomology_one_of_smooth_of_two_mul_genus_sub_two_lt_eulerDegree` と `isGloballyGenerated_of_smooth_of_two_mul_genus_le_eulerDegree` を使う。前者は任意体、後者は代数閉体上で、smooth proper geometrically connected curve を仮定する。これだけで特異・非被約曲線上の豊富性は得られない。conductor の有限台と nilpotent ideal の有限 filtration、2.0 の有限性・消滅・大域生成を使い、各既約成分の次数が正なら制限線束が豊富となる必要な曲線版を供給する。豊富類と nef 類の和の豊富性、豊富錐の開性、負の既約曲線の有効曲線錐の閉包での極線性を独立した補題として得る。
 
-任意の滑らかな射影複素曲面について、滑らかな有理 (−1) 曲線を滑らかな点へ縮約できること、互いに素な有限集合の同時縮約、十分大きな N で Nπ*h−E が豊富となることを証明する。[Stacks] Tag 0C2N, Lemma 54.16.9(1)、Tag 0C2I の縮約の一意性を用いる。縮約の証明では、線形系による射の構成だけでなく、縮約点の完成局所環が ℂ[[u,v]] であることと滑らかさを証明する。必要な形式関数の比較はこの例外曲線とその有限厚化に限定する。
+任意の滑らかな射影複素曲面上の滑らかな有理 (−1) 曲線を、既存 `Scheme.IdealSheafData.IsExceptionalCurveOfFirstKind` に接続する。この型は effective Cartier 性、ℙ¹ との同型、conormal O(1) を含み、数値的な −1 との比較には既存 `isExceptionalCurveOfFirstKind_iff_intersectionNumber` と 2.1 を使う。縮約の存在、標的の滑らかさ、互いに素な有限集合の同時縮約、十分大きい N で Nπ*h−E が豊富となることは新規の実装目標に残す。[Stacks] Tag 0C2N, Lemma 54.16.9(1)、Tag 0C2I を用いる。線形系から射を作るだけでなく、縮約点の完成局所環が ℂ[[u,v]] となることと滑らかさを証明する。必要な形式関数の比較はこの例外曲線と有限厚化に限定する。縮約が得られた後の射の下降と一意性には 2.2 の既存 descent API を用いる。
 
-*Needs:* 2.1–2.3。実数上の二次形式、曲線の次数、射影性。
+*Needs:* 2.1–2.3。native ampleness・曲線次数・exceptional curve、実二次形式、射影性。Nakai、非被約曲線上の必要な豊富性、曲面収縮の存在は本項で構成する必要な範囲の定理である。
 
 ### 2.5 階数 2 の扇とトーリック模型
 
-階数 2 格子の有限で滑らかな完備扇の曲面、トーラス開部分、境界成分、指標の因子を構成する。曲面の射影性も証明する。隣接する原始射線が整数基底であることと滑らかさの対応、扇の細分と節点 blowup の対応、共通の滑らかな細分、トーリック Picard 群の表示を証明する。
+階数 2 格子の扇には既存 `TauCeti.Toric.Fan i` を用いる。有限性と toric cone の条件はこの型に含まれ、正則性・完備性は `Fan.IsRegular`、`Fan.IsComplete` で指定する。曲面の候補は native `Fan.algebraicRealization`、ℂ 上の構造射は `algebraicRealizationOver` とする。完備性から錐集合の非空性を渡し、トーラス開部分は既存 `denseTorusι`、扇の射は `FanHom.algebraicMap` を使い、恒等・合成・chart と密トーラスへの制限の自然性を継承する。
+
+本項で追加するのは、これらの native scheme と曲面の幾何を結ぶ定理である。`regularDualSemigroupEquiv` が与える双対半群の ℕʳ×ℤ^(2−r) 表示を群環へ移して局所 chart を得て、隣接する原始射線が整数基底であることとスキームの滑らかさの対応を証明する。native torus の座標環は ℂ[Hom(N,ℤ)] なので、h↦(u↦det(h,u)) による N≅Hom(N,ℤ) を 0.1 の指数格子との辞書として固定する。トーラスの稠密性、境界成分、指標の因子、分離性・射影性、境界交点、トーリック Picard 群の表示をこの scheme 上で証明する。既存 `Fan.isNormalScheme_algebraicRealization` は正規性を供給するが、組合せ的正則性とスキームの滑らかさの比較は本項の証明義務である。
+
+節点に対応する二次元錐 σ≠⊥ での扇の変更には `Fan.starSubdivisionAlong` を使い、`isRegular_starSubdivisionAlong`、`support_starSubdivisionAlong`、`starSubdivisionAlong_isSubdivision` により正則性・完備性・細分射を得る。この射の `algebraicMap` が 2.2 の閉点 blowup と同型であることを、二次元正則錐の二つの chart で証明する。共通の滑らかな細分とその実際の節点 blowup 列への比較も公開する。`Fan.affineSpaceAlgebraicIso` と `Fan.projectiveSpaceToProj` の既存同型を ℂ²・ℙ² の toric model に用いる。
 
 滑らかな射影有理曲面と反標準節点サイクルの対には、有限回の節点 blowup の後でトーリック模型が存在することを証明する。[GHK-Mirror] v3 Proposition 1.3 の最小有理曲面と ruling による証明を、点 blowup・縮約の言葉で構成する。入力として、(−1) 曲線のない射影有理曲面が ℙ² または Hirzebruch 曲面 F_a（a=0 または a≥2）になることを証明する。[Vakil-S] Class 16 と Class 17 §§1–2 の証明で必要な、平方非負の有理曲線の存在、その線形系から得る ruling、ℙ¹ 上の階数 2 ベクトル束の分裂もこの対象に含める。平方非負の有理曲線 C を C²、次に C·H が最小となるように選び、|C| の各元の既約性・滑らかさ、h⁰(O(C))=C²+2≤3、大域生成を証明する。C²=1 では有限次数 1 の ℙ² への射、C²=0 では全ファイバーが ℙ¹ である ℙ¹ への射を得る。
 
@@ -226,7 +276,7 @@ L の等長変換で M⊥ と各 Dⱼ を点ごとに固定するものは恒等
 
 最小有理曲面の分類の入力 h¹(O_Y)=h⁰(O_Y(2K_Y))=0 は、2.2 の比較と pluricanonical section の点 blowup 不変性から得る。[Vakil-S] Class 16 の Pic(Y)=ℤK_Y の場合の排除には、2.3 の単模性と rank Pic(Y)+K_Y²=10 を使う。曲面分類の証明に一般の Noether 公式や位相的 Poincaré 双対性は追加しない。散乱図や鏡の構成は依存しない。
 
-*Needs:* 0.1、2.1–2.4。Tau Ceti の `TauCeti.Toric.Fan` と `TauCeti.Toric.Fan.algebraicRealization`、半群環の局所化、ℙ² と Hirzebruch 曲面。
+*Needs:* 0.1、2.1–2.4。既存 `Toric.Fan`、`FanHom`、正則双対半群、密トーラス、トーラス作用、`starSubdivisionAlong` と affine/projective space の比較。追加する幾何の範囲は [代数的トーリック曲面の契約](#from-tau-ceti-代数的トーリック曲面) に記す。
 
 ### 2.6 平方零の対から境界格子へ
 
@@ -263,36 +313,46 @@ L の等長変換で M⊥ と各 Dⱼ を点ごとに固定するものは恒等
 
 ### 3.2 電荷核と境界直交格子の同定
 
-一般の順序付きトーリック表示に対し、κ∈M⊥ を補助模型へ引き戻して κ↦(κ·Eᵢ)ᵢ が K への整数加群同型を与えることを証明する。その逆を ι_P:K_P≅M_P⊥⊂L_P と書き、K の形式はこの同型で移す。逆写像は電荷関係 x からトーリック因子類 H_x を構成し、H_x−ΣxᵢEᵢ として得る。節点 blowup の例外直和因子を除くことで一般の基の対へ降りる。標識について `μ_{P,c}∘ι_P` が実際の Picard 群への同じ構成に一致することを証明する。補助模型への写像は ι̃_P=j_P∘ι_P:K_P→L̃_P と定め、節点縮約が空なら j_P=id とする。
+一般の順序付きトーリック表示に対し、κ∈M⊥ を補助模型へ引き戻して κ↦(κ·Eᵢ)ᵢ が K への整数加群同型を与えることを証明する。その逆を ι_P:K_P≅M_P⊥⊂L_P と書き、K の形式はこの同型で移す。逆写像は電荷関係 x からトーリック因子類 H_x を構成し、H_x−ΣxᵢEᵢ として得る。節点 blowup の例外直和因子を除いて一般の基の対へ降ろす。標識について `μ_{P,c}∘ι_P` が実際の Picard 群への同じ構成に一致することを証明する。補助模型への写像は ι̃_P=j_P∘ι_P:K_P→L̃_P と定め、節点縮約が空なら j_P=id とする。K と M⊥ には既存の `LinearMap.ker`、`B.orthogonal` を用い、制限形式の非退化性は要求しない。
 
 さらに、rank H=2 を仮定せず、
 
     L_P/M_P ≅ coker(v*:N*→A*),
     rank K=#I−rank H
 
-を得る。rank H=2 の場合に、Smith 標準形から [Mˢ:M]=[N:H]=s を得る。[GHK-C] Theorem 5.5 と証明の式 (5.1) を参照し、有限指数の電荷像を含むトーリック交点計算を本項で証明する。同論文の unimodular な seed datum の仮定を有限指数の場合へそのまま適用しない。
+を得る。H⊆N の整数基底には Mathlib の `Submodule.smithNormalForm` を使う。この定義は長方形の包含行列と階数落ちを含み、対角係数と source・target の基底を供給する。A→H の全射は H の自由性で分裂し、双対写像を K* 成分上の零写像と H↪N の双対に分ける。Smith の基底で後者の対角係数を読むことで、rank H=2 の場合に [Mˢ:M]=[N:H]=s を得る。全階数の場合の有限商とその濃度には既存 `Submodule.quotientEquivPiZMod`、`Submodule.natAbs_det_basis_change` を使う。正方で行列式非零の行列用の Smith 定理を、電荷写像 v 自体へ適用しない。
 
-**対象対への適用。** Picard 階数と扇の射線数から m=12−n、rank K=10−n、rank H=2 を証明する。1.1 と上の商の同型から s²|n、n≤9、s∈{1,2,3} を得る。境界に沿う巡回順で交点を計算し、ε の全成分を割る整数 d に対し、
+[GHK-C] Theorem 5.5 と証明の式 (5.1) を参照し、有限指数の電荷像を含むトーリック交点計算と、上記の native cokernel との比較を本項の新規目標とする。同論文の unimodular な seed datum の仮定を有限指数の場合へそのまま適用しない。
+
+**対象対への適用。** Picard 階数と扇の射線数から m=12−n、rank K=10−n、rank H=2 を証明する。1.1 と商の同型から s²|n、n≤9、s∈{1,2,3} を得る。境界に沿う巡回順で交点を計算し、ε の全成分を割る整数 d に対し、
 
     κ²≡−Σxᵢ² (mod d),  κ=ι_P(x)
 
-を証明する。この合同式自体は一般の表示にも成立する。交差項の符号を任意のラベル順に流用せず、合同式を順序に依存しない結論として取り出す。[補足 B](#b-電荷と有限指数) に導出を記す。
+を証明する。この合同式自体は一般の表示にも成立する。交差項の符号を任意のラベル順へ流用せず、合同式を順序に依存しない結論として取り出す。[補足 B](#b-電荷と有限指数) に導出を記す。
 
-*Needs:* 0.1、2.1–2.2、2.5、3.1。対象対の数値的帰結には 1.1、2.6。トーリック因子の完全列、整数行列の余核と Smith 標準形。
+*Needs:* 0.1、2.1–2.2、2.5、3.1。対象対の数値的帰結には 1.1、2.6。トーリック因子の完全列と、Mathlib の有限自由加群・Smith 基底・全階数商の既存 API。新規に必要なのは Picard の商と dual charge cokernel の同型、その torsion と飽和指数の比較である。
 
 ### 3.3 中心の整列と有限被覆
 
-有限自由整数加群間の v:A→N に対し、H=im(v)、K=ker(v)、J=Hom(N/H,ℂ×) と置く。中心 c での写像 z↦(cᵢzᵛⁱ) は T(A)→T(K) の c|_K 上のファイバーへ全射で、その平行移動の核が J であることを証明する。c₁|_K=c₂|_K なら比 c₂/c₁ は H の指標となり、Smith 標準形と ℂ× の可除性により N へ延長できる。延長の選択差は J である。この結果に rank H=2 は不要であり、Smith 標準形により J は `(ℂ×)^(rank N−rank H)` と有限巡回群の積として記述される。トーリック表示に適用すると、その平行移動は順序付き中心を整列し、向きと Picard 標識を保つ。
+有限自由整数加群間の v:A→N に対し、H=im(v)、K=ker(v) と置く。群スキームの核には 0.1 の対角化可能群を用い、H↪N に対する既存 `DiagonalizableGroup.kernelCoordinateIso` を適用する。その座標 Hopf 代数は ℂ[N/H] であり、既存の Hopf 商の点と核の同定、および scheme points の自然な辞書を通じて J=Hom(N/H,ℂ×) を得る。rank H=rank N をこの核の定義に課さない。
 
-**有限指数の場合。** rank H=rank N のとき |J|=[N:H]=s であり、ℂ(H)⊂ℂ(N) は有限拡大となる。H の全単項式を固定する ℂ 自己同型がちょうど J の平行移動であることを証明する。sN⊂H と、関数体の元 r が rˢ=1 を満たせば ℂ の定数となることを用いる。この命題は任意の有限指数 s に対して述べる。
+本項の比較定理は、中心 c での写像 z↦(cᵢzᵛⁱ) が T(A)→T(K) の c|_K 上のファイバーへ全射で、平行移動の安定化群が上の J であることを述べる。c₁|_K=c₂|_K なら比 c₂/c₁ は H の指標へ降りる。その N への延長には、ℂ× の rootability、加法表記の可除性、既存の Baer 延長性を H↪N に適用する。指標延長のために Smith 標準形や有限指数を仮定しない。延長の選択差を J と同定し、トーリック表示では既存のトーラス作用が順序付き中心を整列し、向きと Picard 標識を保つことを証明する。具体的に c₂/c₁=(tᵛⁱ)ᵢ なら、中心方程式 1+cᵢzᵛⁱ=0 により曲面側は t⁻¹ による並進であり、`ev(c₂,t⁻¹z)=ev(c₁,z)` を満たす。
 
-評価写像 ev_P:𝕋(A)×𝕋(N)→𝕋(A)、ev_P(c,z)=(cᵢzᵛⁱ)ᵢ を構成する。z=1 で c を回収するので支配的であり、中心の任意の非空開集合に制限しても支配的である。従って中心を変数に残した評価後の有理写像の等号から、独立 X 変数上の等号を回収できる。
+J の積分解には H⊆N に対する既存の部分加群 Smith 標準形を使い、`(ℂ×)^(rank N−rank H)` と有限巡回群の積として記述する。有限性の判定と核座標環の次元には `moduleFinite_kernelCoordinate_iff` と `finrank_kernelCoordinate` を使う。rank H=rank N のとき |J|=[N:H]=s となることは、有限生成可換群の分解と ℂ 上の根の個数から得る。座標環の次元を任意の標数でそのまま幾何学的点の個数とは読まない。
 
-*Needs:* 0.1、3.1–3.2。Smith 標準形、ℂ における根の存在、整スキームの稠密開集合と関数体。
+**有限指数の場合。** ℂ(H)⊂ℂ(N) が有限拡大で、ℂ(H) を点ごとに固定する自己同型群 `Aut_{ℂ(H)}(ℂ(N))` がちょうど J の平行移動であることを証明する。有限加群としての座標環の比較と局所化から有限性を得る。H の全単項式を固定する自己同型に対し、sN⊂H と、関数体の元 r が rˢ=1 を満たせば ℂ の定数となることを用いて並進を回収する。この体自己同型の分類は群スキームの核の同定とは別の比較定理であり、任意の有限指数 s に対して述べる。
+
+評価写像 ev_P:𝕋(A)×𝕋(N)→𝕋(A)、ev_P(c,z)=(cᵢzᵛⁱ)ᵢ は native torus の積と格子写像から定義する。z=1 で c を回収するため支配的であり、中心の任意の非空開集合への制限も、整トーラスの非空開埋込みと支配的射の合成により支配的となる。従って中心を変数に残した評価後の有理写像の等号から、独立 X 変数上の等号を回収できる。
+
+*Needs:* 0.1、3.1–3.2。対角化可能群の核と点、代数閉体の単元の rootability、可除群への Baer 延長、部分加群の Smith 標準形、整スキームの支配的射と関数体。中心安定化・deck map・評価との比較を本項で供給する。
 
 ### 3.4 境界の周期と中心公式
 
-向き付き節点サイクル D の正規化で、多重次数零の線束を節点の接着定数で表し、Pic⁰(D)≅ℂ× を構成する。接着定数の積は局所自明化の変更に不変で、向きを逆転すると逆数になる。n=1 の二枝と n=2 の二節点にも同じ定義を使う。[GHK-M] Lemmas 2.1、2.5 を参照する。
+向き付き節点サイクル D には native の節点曲線の正規化・枝・双対グラフを用いる。節点条件は `AtWorstNodalOfRelativeDimensionOne` に接続し、特異部分の blowup が有限全射かつ正則となる定理と、各節点の上に二点ある定理を適用する。`Scheme.dualGraph` の辺と二つの端点に巡回順を指定し、自己ループと平行な二辺を保つ。各正規化成分の線束は既存の ℙ¹ の次数分類で扱う。
+
+本項で構成するのは、この正規化の導手正方形に沿う可逆層の降下と、Pic⁰(D)≅ℂ× の具体的同型である。実際の節点の局所環 R と、その有限正規化の半局所環 B について、二枝の residue map による `R=B×_{ℂ×ℂ}ℂ` という導手の記述を供給する。節点では B/R の長さが 1 で、対角 ℂ を除いた二枝の residue の差も長さ 1 なので、R をこの pullback と同定する（[Stacks] Tag 0C46, Lemma 53.19.4）。二枝のファイバーを a∈ℂ× で同定する差写像の核を構成し、B→ℂ×ℂ の全射性から (a,1) を B の単元 u に持ち上げる。その核が uR と等しいことにより階数 1 の局所自由性を証明する。制限とこの構成が互いに逆で、線束間の射も降りることを確認して大域化する。split node の `NodeAlgebra` と branch sheaf sequence は局所記述の比較に使い、既約節点の Zariski 局所環を二成分の split node の局所環と同一視しない。
+
+多重次数零の場合は正規化上で各線束が自明なので、接着定数の積が局所自明化の変更に不変であることから同型を得る。向きを逆転すると積は逆数になり、n=1 の二枝と n=2 の二節点にも同じ定義を使う。[GHK-M] Lemmas 2.1、2.5、および節点の局所記述について [Stacks] Tag 0C46 を参照する。
 
 Pic⁰(D)≅ℂ× の上の同型を λ_D と書く。一般のトーリック表示の周期を、標識と 3.2 の逆同型の向きを固定して
 
@@ -308,15 +368,17 @@ Pic⁰(D)≅ℂ× の上の同型を λ_D と書く。一般のトーリック�
 
 内部 (−2) 曲線 C があれば [C]∈K、[C]²=−2、a_c([C])=1 であることを証明する。逆向きの主張や、平方 −2 の全類と変形で実現する根との同一視は仮定しない。
 
-*Needs:* 2.1–2.2、3.1–3.3。線束の制限、正規化上の接着、K が A の直和因子であること。
+*Needs:* 2.1–2.2、3.1–3.3。native 節点曲線の正規化・枝・双対グラフ、ℙ¹ の線束分類、線束の制限。本項で節点サイクルの可逆層の降下を供給し、K の直和因子性には既存の原始部分加群の分裂を使う。
 
 ### 3.5 根を避ける周期の存在
 
-任意の有限自由整数加群が ℂ× への単射指標を持つことを、基底と相異なる素数から証明する。原始元 δ が指定された場合は δ を整数基底 δ,β₁,…,β_r に延ばす。相異なる奇素数 pᵢ によって a(δ)=1/2、a(βᵢ)=pᵢ と定めると、a:K→ℂ× は単射であることを証明する。この一般定理の結論は、全ての非零元 x で a(x)≠1 となることである。
+任意の有限自由整数加群が ℂ× への単射指標を持ち、原始元 δ が指定された場合には a(δ)=1/2 とできることを証明する。原始元の基底への延長には既存 `TauCeti.IsPrimitive.exists_basis` と `Basis.reindex` を使い、δ,β₁,…,β_r を得る。相異なる奇素数 pᵢ を選び、δ↦1/2、βᵢ↦pᵢ という値から `TauCeti.freeAbelianCharEquiv` と `Basis.repr` で指標を構成する。
+
+単射性はまず ℚ× で証明する。既存の `padicValRat.mul`、`padicValRat.zpow` と素数の valuation 計算を適用すると、2 の valuation は δ の係数の負、pᵢ の valuation は βᵢ の係数である。したがって値 1 を持つ元の全係数は零である。ℚ↪ℂ の単射で ℂ× に移せば、全ての非零元 x に対し a(x)≠1 を得る。素因数分解の一意性、原始元の基底延長、自由加群の基底値からの指標構成を別途再実装しない。本項の新規定理は、これらを合成した単射指標の存在と a(δ)=1/2 の正規化であり、δ の特性元性や平方零はこの定理の仮定にしない。
 
 対象対への適用では δ は K の形式の根基に属するため、平方 −2 の α とその全ての δ 平行移動も平方 −2 であり非零である。従ってこの a はそれらの全てで値 1 を避ける。3.4 の全射性で a を中心の周期として実現する。δ を固定する格子等長変換 g に対して a∘g、およびその逆数も根を避ける。全射性の証明にはこの一点の存在で足りる。全ての根を避ける集合が一つの Zariski 開集合であるとは主張しない。
 
-*Needs:* 3.2–3.4。原始元の基底への延長、素因数分解の一意性。
+*Needs:* 3.2–3.4。Tau Ceti の原始元の基底延長と自由アーベル群の指標、Mathlib の素数の無限性と有理数の `padicValRat`。対象対への適用だけで平方 −2 と根基の条件を使う。
 
 ### Examples
 
@@ -432,7 +494,7 @@ s=1 は H=N による。s=p=2,3 では H/pH 内の直線 pN/pH が全電荷の�
     v′ₖ=−vₖ,  v′ᵢ=tₖ(vᵢ) (i≠k),
     Cₖ(c)ₖ=cₖ⁻¹,  Cₖ(c)ᵢ=cᵢcₖ^[εᵢₖ]₊ (i≠k).
 
-tₖ は二つの半平面で行列式 1 の整数線形写像となり、Σ′ が滑らかな完備扇であることを証明する。新表示 P′ の順序は、k を元の射線の列から除き、反対射線の列の先頭へ入れ、他の列の順序を輸送して定める。近接中心を含む場合、k は元の点の上の最初の中心とする。Cₖ は中心トーラスの単項式同型である。二度の変異で Cₖ 自体が固定した枠の恒等になるとは主張しない。X 写像の対合性と、電荷格子の枠の変更を区別する。
+tₖ は二つの半平面で行列式 1 の整数線形写像となる。各錐を対応する線形写像で移して native `Fan.ofCones` の条件を検証し、Σ′ が正則な完備扇であることを証明する。tₖ 全体を一つの格子線形写像や `FanHom` として扱わない。新表示 P′ の順序は、k を元の射線の列から除き、反対射線の列の先頭へ入れ、他の列の順序を輸送して定める。近接中心を含む場合、k は元の点の上の最初の中心とする。Cₖ は 0.4 の格子同型 Bₖ が誘導する native `DiagonalizableGroup.groupSchemeMap` の点上公式として定義する。従って中心トーラスの単項式同型となる。二度の変異で Cₖ 自体が固定した枠の恒等になるとは主張しない。X 写像の対合性と、電荷格子の枠の変更を区別する。
 
 zᵛ の ruling のファイバー類を `F=Σ_{det(u,v)>0}det(u,v)[D̄_u]` とする。トーリック境界類を全引き戻し、Eᵢ を全変換例外類として、整数写像 Iₖ:L̃_P′→L̃_P を次の生成元公式で構成する。
 
@@ -658,23 +720,29 @@ K の基底 κ₁=e₁+e₃、κ₂=e₂+e₄ と δ=κ₁+κ₂ を使い、次
 
 #### サイクルの核と飽和
 
-サイクル行列 C の二次形式は、n≥1 に対して −Σ(qᵢ−qᵢ₊₁)² である。n=1 では零、n=2 では −2(q₀−q₁)² となる。従って ℚ 上の核は定数列である。ΣqᵢDᵢ=0 なら Cq=0 だから qᵢ=q、そして qδ=0 である。δ は原始的非零元なので q=0、境界類は独立である。これから M_Q∩(M⊥)_Q=ℚδ と M_Q+(M⊥)_Q=δ⊥_Q が従う。
+サイクル行列 C の二次形式は、n≥1 に対して −Σ(qᵢ−qᵢ₊₁)² である。n=1 では零、n=2 では −2(q₀−q₁)² となる。従って ℚ 上の核は定数列である。ΣqᵢDᵢ=0 なら Cq=0 だから qᵢ=q、そして qδ=0 である。`TauCeti.IsPrimitive.ne_zero` により δ≠0 なので q=0、境界類は独立である。既存の直交補と有理化の API により M_Q∩(M⊥)_Q=ℚδ と M_Q+(M⊥)_Q=δ⊥_Q が従う。
 
 Mˢ=(M⊗ℚ)∩L、T=Mˢ/M と置く。x=ΣqⱼDⱼ∈Mˢ に対し χⱼ(x)=qⱼ mod ℤ を定める。x·Dⱼ が整数なので、n≥3 では χⱼ₋₁−2χⱼ+χⱼ₊₁=0、n=2 では 2(χ₁−χ₀)=0 である。従って τ=χ₁−χ₀ により χⱼ=χ₀+jτ、nτ=0 となる。n=1 では δ の原始性から T=0 である。
 
-τ(x)=0 なら x−q₀δ∈M であり、q₀δ∈L から q₀∈ℤ、従って x∈M である。よって τ:T→ℚ/ℤ は単射で、T は位数 t|n の巡回群となる。T の生成元 x₀ に対して τ(x₀) は位数 t、χ₀(x₀) は t 分の整数である。従って 0≤j₀<t で χ₀(x₀)+j₀τ(x₀)=0 となるものがあり、`χ_{j₀}` は T 全体で零である。
+τ(x)=0 なら x−q₀δ∈M である。原始性の定義に現れる ℓ:L→ℤ、ℓ(δ)=1 を有理化すると、q₀δ∈L から q₀∈ℤ が従う。よって x∈M であり、τ:T→ℚ/ℤ は単射となる。T は位数 t|n の巡回群である。T の生成元 x₀ に対して τ(x₀) は位数 t、χ₀(x₀) は t 分の整数である。従って 0≤j₀<t で χ₀(x₀)+j₀τ(x₀)=0 となるものがあり、`χ_{j₀}` は T 全体で零である。
 
-この j₀ の係数を読む線形形式 Dⱼ↦[j=j₀] は Mˢ 上で整数値を取る。Mˢ は L の原始部分加群なので、この形式は L 上の整数線形形式へ延びる。単模性により、それはある f₁∈L との交点で表される。f₁·δ=1 であり、δ の特性元条件から f₁² は奇数である。そこで
+この j₀ の係数を読む線形形式 Dⱼ↦[j=j₀] は Mˢ 上で整数値を取る。Mˢ の飽和性を `Submodule.isTorsionFree_quotient_iff` に入れて L/Mˢ の torsion-free 性を得て、`Submodule.exists_isCompl_iff_isTorsionFree_quotient` により補部分加群を取る。`Submodule.prodEquivOfIsCompl` の逆の第一射影に係数形式を合成して、L 上の整数線形形式へ延ばす。したがって整数値双対の延長一般論は既存結果の適用である。
+
+この形式を `B.toPerfPair.symm` で f₁∈L に戻すと、f₁·Dⱼ=[j=j₀]、f₁·δ=1 となる。`B.IsCharacteristic δ` と対称性により f₁² は奇数なので、
 
     f=f₁−((f₁²+1)/2)δ
 
-と置くと、f·Dⱼ=[j=j₀]、f²=−1 となる。この構成は f の有効性も曲線としての実現も用いない。
+と置けば、f·Dⱼ=[j=j₀]、f²=−1 である。χⱼ の漸化式、成分 j₀ の選択、f の境界交点が本件の新規計算であり、f の有効性や曲線としての実現は用いない。
 
 #### 鏡映の構成
 
-U=ℤδ⊕ℤf の Gram 行列は [[0,1],[1,−1]] で行列式 −1 だから L=U⊕U⊥ である。`αᵢ=D_{j₀+i}`、1≤i<n は U⊥ 内の負の `A_{n−1}` 型の単純根である。反射 sᵢ(x)=x+(x·αᵢ)αᵢ は格子等長変換となる。
+U=ℤδ⊕ℤf の Gram 行列は [[0,1],[1,−1]] で行列式 −1 である。この基底の行列式から制限形式の完全性を確認し、`LinearMap.BilinForm.isCompl_orthogonal_of_restrict_bijective` を適用して L=U⊕U⊥ を得る。`αᵢ=D_{j₀+i}`、1≤i<n は U⊥ 内の負の `A_{n−1}` 型の単純根である。
 
-Q=Σℤαᵢ を ℤⁿ の座標和零の格子へ αᵢ↦bᵢ−bᵢ₊₁ で同定し、形式を通常の内積の負とする。sᵢ は隣接互換、Q⊥ では恒等である。従って順序反転の置換に対応する w₀ は一意に定まり、`w₀αᵢ=−α_{n−i}`、w₀²=id となる。n=1 では Q=0、w₀=id とする。
+反射 sᵢ(x)=x+(x·αᵢ)αᵢ は、線形形式 −B(αᵢ,−) が αᵢ を 2 に移すことから既存の `Module.reflection` で構成する。形式を保つことには `LinearMap.IsReflective.of_dvd_two` と `isOrthogonal_reflection` を適用し、反射の対合性と直交ベクトルの固定は既存の反射 API を使う。`IntegralLattice.rootReflection` を用いる場合には、平方 +2 の入力に合わせて負形式を取る。
+
+Q=Σℤαᵢ の負形式を有理化し、αᵢ の基底の Gram 行列が `CartanMatrix.A (n−1)` であることを確認する。既存の `IntegralLattice.Isometry.ofGramMatrixEq` と `typeAIsometryZeroSumLattice` により、Q を ℤⁿ の座標和零格子へ αᵢ↦bᵢ−bᵢ₊₁ と移す。元の形式は通常の内積の負である。この同型が反射 sᵢ を隣接互換に移すことが必要な橋渡しである。
+
+隣接互換で順序反転を表す語を取り、同じ根反射の語を U⊥ に作用させて w₀ を得る。各反射は Q⊥ を固定するので、Q_Q とその直交補の直和上で w₀ の作用が決まり、`w₀αᵢ=−α_{n−i}`、w₀²=id となる。根反射の整数性が U⊥ の carrier の保存を保証する。n=1 では Q=0、反射語は空、w₀=id とする。
 
     g₀=id_U⊕(−w₀|_{U⊥})
 
@@ -682,15 +750,21 @@ Q=Σℤαᵢ を ℤⁿ の座標和零の格子へ αᵢ↦bᵢ−bᵢ₊₁ �
 
     g₀κ=−κ+2(κ·f)δ.
 
-これが Suggested.lean の格子定理の証明である。
+以上が Suggested.lean の格子定理への証明経路である。標準 A 型の座標模型と一般の反射・直交分解を再利用し、サイクルの基底との比較および g₀ の境界作用を新規に証明する。
 
 #### 指数の制約
 
-L の符号数が (1,9) の場合、U⊥ は階数 8 の負定値偶単模格子である。δ⊥/ℤδ を U⊥ へ同定すると、M/ℤδ は `A_{n−1}(−1)` で、その行列式の絶対値は n となる。M/ℤδ の飽和指数も t なので
+この段落は境界各成分との交点を指定した f の構成に依存しない。原始 δ に対して ℓ(δ)=1 なる整数線形形式を取り、完全双対 `B.toPerfPair.symm` により f₁·δ=1 なる f₁ を得る。特性元条件で f₁² が奇数と分かるため、f₀=f₁−((f₁²+1)/2)δ とすれば f₀²=−1、f₀·δ=1 である。
 
-    n=t² · |disc((M/ℤδ)ˢ)|.
+U₀=ℤδ⊕ℤf₀ の Gram 行列 [[0,1],[1,−1]] に既存の完全制限による直交分解を適用し、L=U₀⊕U₀⊥ とする。`orthogonal_orthogonal_of_isCompl` と `isPerfPair_restrict_of_isCompl_orthogonal` から U₀⊥ の完全性を得る。δ⊥/ℤδ≅U₀⊥ はこの直和の射影で構成する。U₀ の基底を δ+f₀、f₀ に替えると Gram 行列は diag(1,−1) となる。L の符号数が (1,9) なら、既存の直交和の階数・符号数の公式から U₀⊥ は階数 8 の負定値格子となる。δ に直交するので特性元条件から偶であり、完全な整数形式として単模である。
 
-右の残りの因子は非零整数であるから t²|n。階数から n−1≤8、従って n≤9 となる。E₈ 格子の分類や、その全等長群の計算は不要である。
+M/ℤδ の基底を境界成分から作り、符号を反転した形式の Gram 行列が `CartanMatrix.A (n−1)` であることを確認する。`IntegralLattice.Isometry.ofGramMatrixEq` で標準 `typeARootLattice (n−1)` と同定し、`discriminant_typeARootLattice` により判別式 n を得る。
+
+S=(M/ℤδ)ˢ を同じ有理空間の格子として構成する。S の積分性から M/ℤδ の双対格子に入るので、符号を反転した S を標準 A 型の `IntermediateCarrier` として表せる。原始 δ による商と飽和を比較し、この overlattice の指数が元の [Mˢ:M]=t と一致することを証明する。既存の `IntermediateCarrier.IsIntegral.discriminant_mul_index_sq` と `index_sq_dvd_discriminant` を適用して、
+
+    n=t² · disc(S),   t²|n
+
+を得る。ここで disc(S) は符号を反転した格子の自然数値の判別式である。階数から n−1≤8、従って n≤9 となる。新規に必要なのは境界商の基底・形式と飽和指数の比較であり、A 型行列式、指数平方公式、偶単模格子の分類は実装し直さない。
 
 #### 制限と境界像による一意性
 
@@ -943,15 +1017,19 @@ K を固定し Dᵢ を Dᵢ₊ₖ に移す等長変換を考える。x=E₁−
 
 必要な定義・定理は、主定理の条件を共通の定義に埋め込まず、それぞれ自然な入力と基本 API を持つ成果として構成する。有限自由整数加群上のトーラス、滑らかな射影曲面の交点と点 blowup、有理曲面の数値的定理、一般の Looijenga 対の表示と周期を区別し、原始的 nef 平方零という条件はその帰結を使う命題に課す。
 
-対応する一般論が進行中の別ロードマップに含まれていても、ここで明示した範囲の定理は本ロードマップの実装目標とする。既存の対象・写像・証明済みの定理を共用し、同じ型の上に必要な定理を加える。取り出した範囲の外の一般の場合の完成は要求しない。各対象について、恒等・合成・引き戻し・同型不変性など、後続利用に必要な基本理論もその担当項目に含める。
+実装済みの対象・写像・証明を第一の供給元とする。同じ内容の独自型や一般定理を作り直さず、必要な記法の比較、仮定の充足、対象の幾何への適用を追加する。対応する一般論が進行中の別ロードマップに含まれていても、まだ実装されていない部分のうち本書に必要な定理は、同じ対象と名前空間を拡張する再利用可能な成果として構成する。その範囲を越える一般の場合の完成は前提にしない。恒等・合成・引き戻し・同型不変性などの基本 API は、既存定理を適用するか、各担当項目で必要な接続を証明して供給する。
 
-| 関連する一般理論 | 本書に必要な範囲 | 本書の担当箇所 |
-| --- | --- | --- |
-| [ClusterAlgebras](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/ClusterAlgebras/README.md) §§1.1、3.1–3.3 | 有限ラベルの歪対称行列、X 変異、置換。X だけで割る語の群は本書で定義する | 0.1–0.5 |
-| [IntegralLattices](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/IntegralLattices/README.md) の基礎・双対・飽和・直交分解 | 有限自由 ℤ 加群、必要な退化直交格子と非退化単模格子 | 1.1–1.4、3.2 |
-| [SchemeAndStackFoundations](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/SchemeAndStackFoundations/README.md) §§3.4、4.11、5.9–5.10 | 複素射影曲線・曲面のコホモロジー、滑らかな射影曲面の交点・点 blowup、有理曲面の数値的定理 | 2.0–2.4、4.1–4.2 |
-| [NeronModelsAndSemistableAbelianVarietiesPartII](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/NeronModelsAndSemistableAbelianVarietiesPartII/README.md) §4.0 | 有理曲面の共通点 blowup 解消、Picard 直交分解、χ(O)=1 | 2.2–2.3 |
-| [AnalyticToricGeometry](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/Completed/AnalyticToricGeometry/README.md) Layer 0 | 有限正則扇の代数的実現と指標。階数 2 の交点・模型変更は本書で構成する | 2.5、3.1–3.2、5.1–5.5 |
+| 関連する一般理論 | 直接利用する供給 | 本ロードマップで追加する内容 | 担当 |
+| --- | --- | --- | --- |
+| [ClusterAlgebras](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/ClusterAlgebras/README.md) §§0.1–0.2、1.1–1.2、3.1–3.4 | Laurent 環、交換行列、係数種、減算なし・熱帯係数、変異の対合性と語 | 行列の規約辞書、整数局所化と任意体への係数変更、三種の操作の語、X だけで割る群、境界付値との比較 | 0.1–0.5、5.4–5.5 |
+| [IntegralLattices](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/IntegralLattices/README.md) Layer 0 と判別群・overlattice の基礎 | 原始性、完全双対、直交分解、有理化、A 型格子、指数平方公式 | サイクル格子との比較、境界に適合する反転対合、Picard の商と電荷の余核、作用の忠実性 | 1.1–1.4、3.2、3.5 |
+| Tau Ceti の対角化可能群と可除群 | 指標スキームと点、格子写像、群スキームの核、指標の延長 | 中心の整列、有限指数での deck map の分類、評価の支配性 | 0.1、3.3 |
+| [SchemeAndStackFoundations](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/SchemeAndStackFoundations/README.md) §§2.6、2.20 | coherent kernel、twist の生成、射影空間の全次数 cohomology、acyclic pushforward、射影公式、最高次微分形式 | 次元 ≤2 の射影支持への有限性・消滅の接続、有理曲面の trace pairing | 2.0、2.2–2.3 |
+| 同 §§5.9–5.10 | Picard 類、Euler 標数による曲面交点、特異曲線次数、局所長と非負性 | 曲面交点と制限次数の比較・双線形性、有理曲面 RR・正錐・Nakai | 2.1、2.3–2.4、4.1–4.2 |
+| [NeronModelsAndSemistableAbelianVarietiesPartII](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/NeronModelsAndSemistableAbelianVarietiesPartII/README.md) §§1.8、4.0 と SchemeAndStackFoundations §4.9 | blowup と chart、例外因子、既にある縮約に沿う射の下降、節点の枝・正規化 | 点 blowup の Picard 公式・共通解消・曲面縮約、節点サイクルの可逆層の降下 | 2.2–2.4、3.4 |
+| [AnalyticToricGeometry](https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/Completed/AnalyticToricGeometry/README.md) Layer 0 | 有限扇、代数的実現、扇の射、密トーラスと作用、星状細分 | 階数 2 の曲面・境界・交点・Picard、スキームの点 blowup との比較、トーリック模型と表示変更 | 2.5、3.1–3.2、5.1–5.5 |
+
+関連ロードマップの章は共有する一般論の範囲を示す。実装の供給契約は以下の固定版の宣言であり、未完成の章の結論を仮定として受け取らない。境界サイクル、表示、周期、幾何的実現はこれらの既存の対象の上に定義し、主定理の追加条件を使う箇所を分離する。
 
 ### 数学的な境界
 
@@ -976,7 +1054,7 @@ K を固定し Dᵢ を Dᵢ₊ₖ に移す等長変換を考える。x=E₁−
 
 ### Lean の受入仕様
 
-[Suggested.lean](Suggested.lean) は 1.2 の格子の主要定理を、実体のある有限自由加群と双線形形式の上に述べる。単模性は形式から双対への写像の全単射性、原始性は δ を 1 に移す整数線形形式の存在で表す。定義が結論を含む構造や、未指定の Prop を導入しない。
+[Suggested.lean](Suggested.lean) は 1.2 の格子の主要定理を、実体のある有限自由加群と双線形形式の上に述べる。単模性は Mathlib の `LinearMap.IsPerfPair`、原始性は `TauCeti.IsPrimitive`、特性元条件は `LinearMap.BilinForm.IsCharacteristic`、境界直交部分は既存の `orthogonal` で表す。これらはそれぞれ完全双対、δ を 1 に移す整数線形形式の存在、特性合同式という数学的条件を持つ。定義が結論を含む構造や、未指定の Prop を導入しない。
 
 群同定と関係式判定を述べるには、0.2–0.3 の X 有理写像群、3.1 の標識付き表示、6.1 の幾何的引き戻しを先に構成する必要がある。これらは本書の構成目標であり、空の代替型による theorem は置かない。各項の「証明する」は、指定した命題と証明経路を Lean の定理として実装する義務を意味する。数学的結論を未指定の仮定として受け取ることや、形式化中に命題そのものを決め直すことを意味しない。格子定理の Lean 署名の型検査、数学的仕様と証明経路の確定、全定理の Lean 証明完了はそれぞれ別の受入条件である。
 
@@ -984,49 +1062,144 @@ K を固定し Dᵢ を Dᵢ₊ₖ に移す等長変換を考える。x=E₁−
 
 ### From Mathlib
 
-有限自由整数加群には `Module.Free`、`Module.Finite`、基底、`LinearMap`、`LinearEquiv` を用いる。指標の整数格子は加法群であり、群環は `AddMonoidAlgebra`、関数体は `FractionRing`、関数体同型は `AlgEquiv` とする。群の反対群によって点写像と引き戻しの合成順を対応させる。有限核の基底・Smith 標準形・原始元の基底延長のうち証明が必要な特殊命題は 1.1、3.2–3.3 の目標に含める。
+有限自由整数加群には `Module.Free`、`Module.Finite`、`Basis`、`LinearMap`、`LinearEquiv` を用いる。整数格子は加法群であり、指標には `Multiplicative` による既存の型タグ、群環には `AddMonoidAlgebra`、関数体には `FractionRing`、その同型には `AlgEquiv` を用いる。群の反対群によって点写像と引き戻しの合成順を対応させる。曲面の carrier は `AlgebraicGeometry.Scheme` とその ℂ 上の構造射である。
 
-格子の形式には `LinearMap.BilinForm`、対称性には `LinearMap.BilinForm.IsSymm`、等長同型には `LinearMap.BilinForm.IsometryEquiv` を用いる。署名の出典は Mathlib の `LinearAlgebra/BilinearForm/Basic.lean`、`Properties.lean`、`IsometryEquiv.lean` である。曲面は `AlgebraicGeometry.Scheme` とその ℂ 上の構造射を用いて扱う。
+格子の形式は `LinearMap.BilinForm`、対称性は `LinearMap.BilinForm.IsSymm`、等長同型は `LinearMap.BilinForm.IsometryEquiv`、単模性は `LinearMap.IsPerfPair` を直接用いる。後者の `B.toPerfPair` は L と整数双対を同定し、`LinearMap.IsPerfPair.of_bijective` が全単射性による既存の表現と結ぶ。署名の出典は `Mathlib/LinearAlgebra/BilinearForm/Basic.lean`、`Properties.lean`、`IsometryEquiv.lean`、`Mathlib/LinearAlgebra/PerfectPairing/Basic.lean` である。
+
+| 使用箇所 | 既存宣言と source file | 正確な供給内容 | 本件で残す接続 |
+|---|---|---|---|
+| 3.2、3.3 の任意階数の包含 | `Submodule.smithNormalForm`（`Mathlib/LinearAlgebra/FreeModule/PID.lean`） | PID 上の有限基底 b と部分加群 S に、S と全体の基底・添字の単射・非零対角係数を与える。長方形と階数落ちを含む。 | charge の source/range と dual map に基底を運ぶこと、Picard 商との同一視 |
+| 3.2、3.3 の全階数商 | `Submodule.smithNormalFormOfRankEq`、`Submodule.quotientEquivPiZMod`（前記 PID と `FreeModule/Finite/Quotient.lean`） | rank S=rank M の下で M/S を有限個の ZMod の積に同定する。 | 有限指数での s と deck group J の比較。一般の J の torus 因子は長方形 Smith の補座標から得る。 |
+| 格子の指数 | `Submodule.natAbs_det_basis_change`（`Mathlib/LinearAlgebra/FreeModule/Finite/CardQuotient.lean`） | 同じ有限添字の基底を持つ S⊆M について、基底変換行列式の絶対値が `Nat.card (M ⧸ S)` に等しい。 | H↪N と Picard 側の飽和指数の同定 |
+| 3.3 の指標延長 | `Module.Baer.of_divisible`（`Mathlib/Algebra/Category/Grp/Injective.lean`）、`Module.Baer.extension_property_addMonoidHom`（`Mathlib/Algebra/Module/Injective.lean`） | 可除アーベル群 Q への準同型は任意の単射 f:M→N に沿って延びる。有限生成・有限指数は不要。 | Tau Ceti の ℂˣ の rootability を Additive 化し、H↪N に適用する。 |
+| 3.5 の単射性 | `padicValRat.mul`、`padicValRat.zpow`、`padicValRat.self` と素数の valuation 計算（`Mathlib/NumberTheory/Padics/PadicVal/Basic.lean`） | 有理数の積・整数冪の valuation と各素数での値 | 指定した基底値 1/2,pᵢ の valuation が係数を回収すること |
+
+有限核の自由性、Smith 基底、全階数の商の表示、原始元の基底延長を一括して新規義務にしない。原始元の基底延長は次節の Tau Ceti API、サイクル・charge・Picard の間の特殊な比較だけを 1.1、3.2–3.3 の実装目標とする。
+
+### From Tau Ceti: 指標トーラスと変異
+
+以下の供給は基準版 Tau Ceti の実装済み宣言であり、0.1–0.5 はそれらの native 型に本書の規約と X 有理写像を接続する。`ClusterAlgebras` ロードマップ全体の完成は依存条件にしない。
+
+| 供給元 | 既存の対象・定理 | 本書で追加する比較 |
+| --- | --- | --- |
+| [DiagonalizableGroup/Basic](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/AlgebraicGroup/DiagonalizableGroup/Basic.lean)、[Scheme/Points](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/AlgebraicGroup/DiagonalizableGroup/Scheme/Points.lean) | 任意の可換群の群環とその代数点 `pointsMulEquiv`、有限生成可換群の実際の群スキーム `groupScheme` と `schemePointsMulEquiv`、`schemePointsMulEquiv_groupSchemeMap` | 有限自由加法格子 B の記法、AddMonoidAlgebra との比較、scheme functionField との同型 |
+| [SplitTorus/Basic](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/AlgebraicGroup/SplitTorus/Basic.lean)、[LinearMap](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/AlgebraicGroup/SplitTorus/LinearMap.lean) | 座標格子 I→₀ℤ の torus points、`ofLinearMap` と `schemePointsMulEquiv_ofLinearMap` | 有限添字での Finsupp/関数表示の移送、中心写像 C の点上公式 |
+| [MvPolynomial/Laurent/Basic](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/MvPolynomial/Laurent/Basic.lean)、[Polynomial](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/MvPolynomial/Laurent/Polynomial.lean) | `TauCeti.LaurentRing`、`unitX`、`aeval`、`aevalEquiv`、`algHom_ext`、`renameEquiv`、`MvPolynomial.toLaurent` の単射、Laurent 局所化 | 一般の有限自由格子の基底表示、分数体 ext、X 変異の局所化環との比較 |
+| [ExchangeMatrix/Mutation](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/ExchangeMatrix/Mutation.lean)、[Word](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/ExchangeMatrix/Word.lean)、[Factorization](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/ExchangeMatrix/Factorization.lean) | 行列変異の対合性・歪対称化の保存・reindex・否定、有限語と逆語、左右の整数対合による因数分解 | symmetrizer=1 と B=−ε の辞書、右因子の電荷核への制限、三種の辺を混ぜた型付き語 |
+| [YSeed/Basic](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/YSeed/Basic.lean)、[Word](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/YSeed/Word.lean)、[Geometric](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/YSeed/Geometric.lean) | `CoefficientSemifield` 上の係数変異・対合性・自然性・語、熱帯係数と extended matrix の変異の一致 | X 公式との規約比較、符号反転、任意体上の局所化同型、実際の境界付値との比較 |
+| [CoefficientSemifield/Universal](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/CoefficientSemifield/Universal.lean)、[Tropical](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/Cluster/CoefficientSemifield/Tropical.lean) | `Qsf` とその普遍性、`QsfZero.toFractionRing_injective`、`InfTropical` と `Trop` | 全 Qsf の通常の有理関数体への単射比較は標数零、任意標数への変異は整数局所化の係数変更 |
+
+指標の延長には `TauCeti.IsAlgClosed.unitsRootableByNat`（`TauCeti/FieldTheory/IsAlgClosed/Units.lean`）と `Additive.instDivisibleByNat`（`TauCeti/GroupTheory/Divisible.lean`）を使い、`AddGroup.divisibleByIntOfDivisibleByNat` で ℤ に関する可除性を得る。これを前節の `Module.Baer.of_divisible` とその `extension_property_addMonoidHom` に渡す。一般の H↪N について準同型が延びるので、3.3 の比較は延長の存在を再証明せず、その multiplicative 表記と選択差を記録する。
+
+3.3 の核の座標環は [DiagonalizableGroup/Kernel](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/AlgebraicGroup/DiagonalizableGroup/Kernel.lean) の `kernelCoordinateIso` を p:H→N に適用して ℂ[N/H] と同定する。`moduleFinite_kernelCoordinate_iff` と `finrank_kernelCoordinate` は有限性と座標環の次元を与える。ℂ 点の個数と [N:H] の一致、既存の可除群への延長の適用、順序付き中心の安定化群としての解釈は 3.3 の比較定理である。[MonoidAlgebra/Finite](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Algebra/MonoidAlgebra/Finite.lean) の `TauCeti.MonoidAlgebra.mapDomainRingHom_finite_of_finite_quotient` により有限指数の場合の群環拡大の有限性を得て、分数体へ移す。
+
+Hopf 商から点の核への接続には `TauCeti.CommHopfAlgCat.quotientPointsSubgroup_kernelHopfIdeal_eq_ker_mapPointsFunctor`（`TauCeti/Algebra/AlgebraicGroup/HopfIdeal/Points/Kernel.lean`）を使う。これは任意の可換 R 代数上で商の点の部分群と誘導射の核を同定する。さらに `TauCeti.CommHopfAlgCat.schemePointsAlgΓMulEquiv` と `schemePointsAlgΓMulEquiv_mapDomain`（`CommHopfAlgCat/SchemePoints.lean`）でスキームの点と比較する。0.1 の対角化可能群へ適用する有限生成性は H、N、N/H が満たし、H の全階数性は不要である。
+
+[AlgebraicGeometry/Morphisms/Dominant](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/AlgebraicGeometry/Morphisms/Dominant.lean) の `Scheme.Hom.functionFieldMap`、`functionFieldMap_comp`、`isIso_functionFieldMap_of_isOpenImmersion`、`ext_of_functionFieldMap_eq` を 0.1、3.3、5–6 の比較に使う。最後の ext には source の reduced・irreducible、target の irreducible・基底上 separated、および二射の dominance と基底適合性を供給する。有理写像では共通稠密開の代表へ適用する。`Birational/AlgHom.lean` の正則延長は全 stalk が valuation ring という仮定を持つため、一般の曲面の正則延長には使用しない。
 
 ### From Tau Ceti: 整数格子
 
-`TauCeti.IntegralLattice` と `TauCeti.IntegralLattice.integralForm` は整数格子とその整数値形式を与える（`TauCeti/LinearAlgebra/IntegralLattice/Basic.lean`）。非退化性は独立の条件なので、退化した K に非退化性を誤って要求しない。抽象的な Picard 加群を使う 1.2 の署名は、同じ整数双線形形式の言葉で直接述べる。
+`TauCeti.IntegralLattice` は有理ベクトル空間の full 整数 carrier と対称整数値形式を持ち、非退化性・正定値性は追加条件である（`TauCeti/LinearAlgebra/IntegralLattice/Basic.lean`）。1.2 は `L` と `B : LinearMap.BilinForm ℤ L` の上に直接述べ、判別式などの lattice API を使う時に `IntegralLattice.ofIntegralForm`、`ofIntegralForm.carrierEquiv`、`ofIntegralForm.carrierIsometry`（`IntegralLattice/Rationalization.lean`）で接続する。この変換は退化形式にも適用でき、K の非退化性を要求しない。
 
-`LinearMap.BilinForm.isCompl_orthogonal_of_restrict_bijective`（`TauCeti/LinearAlgebra/BilinearForm/Orthogonal.lean`）の、部分加群上の制限形式が完全な場合の直交補との分解を 1.2 で利用する。原始部分加群に関する残りの整数計算は 1.1 の目標である。
+下表の `IntegralLattice/…` は `TauCeti/LinearAlgebra/IntegralLattice/…`、格子宣言は特記しない限り `TauCeti.IntegralLattice` namespace に属する。
+
+| 使用箇所 | 既存宣言と source file | 供給内容と適用境界 | 本件で残す接続 |
+|---|---|---|---|
+| 1.1、1.2、3.5 | `TauCeti.IsPrimitive`、`IsPrimitive.exists_basis`（`TauCeti/Algebra/Module/Primitive.lean`） | 原始性は v を 1 に移す整数線形形式の存在。有限自由整数加群の原始元を基底へ延ばす。 | δ と境界類の比較、3.5 の基底値の指定 |
+| 1.1、1.2 | `LinearMap.BilinForm.IsCharacteristic`、`isCharacteristic_iff`、`IsometryEquiv.isCharacteristic_apply_iff`（`TauCeti/LinearAlgebra/BilinearForm/Characteristic.lean`） | `∀x, 2∣B(δ,x)−B(x,x)` と等長変換による保存。 | δ の幾何学的な特性元性と、平方 −1 の補正 |
+| Mˢ の整数値双対の延長 | `Submodule.isTorsionFree_quotient_iff`（`TauCeti/LinearAlgebra/Quotient/Basic.lean`）、`Submodule.exists_isCompl_iff_isTorsionFree_quotient`（`LinearAlgebra/Submodule/Primitive.lean`） | 飽和と torsion-free 商の同値。Dedekind domain 上、全体が torsion-free で商が有限生成なら、torsion-free 商と整数加群としての直和分解が同値。 | Mˢ の飽和性を確認し、補部分加群への射影と係数線形形式を合成する。ここでは直交補を主張しない。 |
+| L=U⊕U⊥ と完全性 | `LinearMap.BilinForm.isCompl_orthogonal_of_restrict_bijective`、`isPerfPair_restrict_of_isCompl_orthogonal`、`orthogonal_orthogonal_of_isCompl`（`TauCeti/LinearAlgebra/BilinearForm/Orthogonal.lean`） | 対称で完全な制限形式は直交補と分裂する。全体が完全なら、その直交因子も完全となる。 | Gram [[0,1],[1,−1]] の基底と完全性、δ⊥/ℤδ との同定 |
+| carrier と単模性の辞書 | `IsUnimodular.isPerfPair_integralForm`、`isUnimodular_iff_isUnit_gramDet`、`isUnimodular_orthogonalSum_iff`（`IntegralLattice/Unimodular.lean`） | lattice の単模性、完全整数形式、Gram determinant の単元性を比較し、直交和の単模性を因子に分ける。 | 曲面の交点形式と U₀⊥ への適用 |
+| A 型への比較 | `Isometry.ofGramMatrixEq`（`IntegralLattice/Gram.lean`）、`typeASimpleRootBasis`、`discriminant_typeARootLattice`、`typeADiscriminantGroupEquiv`（`IntegralLattice/RootLattice/TypeA/Basic.lean`） | Gram 行列の一致から等長同型。標準 A_r の判別式 r+1 と `ZMod (r+1)` の判別群。 | M/ℤδ の基底と負の Cartan 行列。既存 A 型は正の形式なので、符号を反転して比較する。 |
+| 1.2 の隣接反射 | `typeAIsometryZeroSumLattice`、`typeAIsometryZeroSumLattice_typeASimpleRoot`（`IntegralLattice/RootLattice/TypeA/ZeroSum.lean`） | 標準 A_r と整数座標和零模型を、単純根を指定して等長同定する。 | 境界根の反射を隣接互換に移すこと、反射語の U⊥ への整数作用 |
+| 1.1 の指数平方 | `IntermediateCarrier.IsIntegral.discriminant_mul_index_sq`、`index_sq_dvd_discriminant`（`IntegralLattice/Overlattice/Index.lean`）、`discriminant_eq_mul_relIndex_sq`（`IntegralLattice/Index.lean`） | 整数 overlattice の指数平方が判別式を割る。前者の整除定理と後者の指数公式に正定値性は不要。 | (M/ℤδ)ˢ を標準 A 型の `IntermediateCarrier` に移し、その指数を [Mˢ:M] と同定する。 |
+| 1.1 の階数・符号数 | `finrank_orthogonalSum`、`signature_orthogonalSum`（`IntegralLattice/Orthogonal/Sum.lean`）と signature の既存 API | 直交和の階数と正・零・負の指数を計算する。 | signature(L)=(1,0,9)、signature(U₀)=(1,0,1) から U₀⊥ の rank8・負定値を得る。 |
+
+`IntegralLattice.rootReflection` とその対合性・固定ベクトルの定理（`IntegralLattice/Isometry/Reflection.lean`）は平方 +2 の根を入力とし、非正定値・退化 lattice にも使える。平方 −2 の境界根には形式の符号を反転して使うか、既存 `Module.reflection` と `LinearMap.IsReflective` を直接使う。`LinearMap.BilinForm.Isometry.isometryGroupExtend` は体上の部分空間の延長であり、整数 carrier 保存までは供給しない。本件では根反射の整数性を保持して w₀ を構成する。
+
+標準 A 型の Weyl 群と対称群の同型 `TauCeti.DynkinType.typeAWeylGroupEquiv`（`TauCeti/LinearAlgebra/RootSystem/Weyl/TypeA/Basic.lean`）も存在するが、その carrier は標準 root datum の Weyl 群である。1.2 の任意の整数形式 B に直接適用したものとして数えず、必要な境界根との比較を明示する。飽和の周期指標 χⱼ、j₀ の選択、g₀ の境界作用、Picard 商と charge cokernel の比較は引き続き本ロードマップの証明目標である。
 
 ### From Tau Ceti: 射影スキームとコホモロジー
 
-2.0 の層は `F:X.Modules` に対する `SheafOfModules.IsQuasicoherent` と `SheafOfModules.IsFiniteType` で扱い、局所 Noetherian 上で coherent 条件と同定する。射影性は `AlgebraicGeometry.Scheme.IsProjectiveOver`（`ProjectiveSpectrum/ProjectiveOver.lean`）、層コホモロジーは `TauCeti.AlgebraicGeometry.Scheme.Modules.Cohomology`（`Cohomology/Basic.lean`）、整数 twist は `AlgebraicGeometry.Proj.twistingSheaf`（`ProjectiveSpectrum/TwistingSheaf/Basic.lean`）を用いる。有限性はこの cohomology の ℂ 加群の有限次元性、消滅はその型の `Subsingleton` として述べる。
+以下のファイルは `TauCeti/AlgebraicGeometry/` 以下を指し、Tau Ceti の基準 commit `1bf97b4973827fc8b005ddbe5372e6f08a28ddbb` での供給である。2.0 の層は `F:X.Modules` と `SheafOfModules.IsQuasicoherent`、`SheafOfModules.IsFiniteType` を用い、局所 Noetherian 上で coherent 条件と同定する。射影性は `AlgebraicGeometry.Scheme.IsProjectiveOver`（`ProjectiveSpectrum/ProjectiveOver.lean`）、cohomology は `TauCeti.AlgebraicGeometry.Scheme.Modules.Cohomology`（`Cohomology/Basic.lean`）、整数 twist は `AlgebraicGeometry.Proj.twistingSheaf`（`ProjectiveSpectrum/TwistingSheaf/Basic.lean`）を用いる。有限性は基底環上の `Module.Finite`、消滅は cohomology の型の `Subsingleton` として述べる。
 
-`AlgebraicGeometry.Scheme.Modules.subsingleton_cohomology_succ_of_isAffine`（`Cohomology/Affine.lean`）と `AlgebraicGeometry.Scheme.Modules.homologyCechComplexLinearEquiv`（`Cohomology/Cech/Linear.lean`）を、quasi-coherent sheaf のアフィン消滅と、有限アフィン被覆の基底環線形な Čech 比較に使う。被覆の有限交叉のアフィン性は separated なスキーム上で供給する。
+| 用途 | 供給宣言とファイル | 仮定、出力、適用先 |
+|---|---|---|
+| affine 消滅と有限被覆上界 | `AlgebraicGeometry.Scheme.Modules.subsingleton_cohomology_succ_of_isAffine`（`Cohomology/Affine.lean`）、同 namespace の `subsingleton_cohomology_of_isAffineOpen_of_card_le`（`Cohomology/FiniteCover.lean`） | 後者は affine diagonal、quasi-coherent F、r 個の非空 finite affine cover を仮定して i≥r の消滅を返す。separated 性から affine diagonal を渡す。支持スキームの d+1 本の hyperplane-complement cover は 2.0 で供給する。 |
+| 有限射の coherent pushforward | `AlgebraicGeometry.Scheme.Modules.isFinitePresentation_pushforward_of_isFinite`（`Modules/Quasicoherent/Pushforward/Finite.lean`） | f:X→Y finite、Y locally Noetherian、F qc finite type なら f_*F finite presentation。 |
+| 全次数 pushforward 比較 | `AlgebraicGeometry.Scheme.Hom.cohomologyPushforwardBaseLinearEquivOfIsAffineHom`（`Cohomology/PushforwardAcyclic/Affine.lean`） | f affine、F qc、X,Y,f が同じ Spec R 上なら、全 n について Hⁿ(Y,f_*F)≃ₗ[R]Hⁿ(X,F)。有限射はこの特殊化。 |
+| 射影公式 | `TauCeti.AlgebraicGeometry.FiniteLocallyFreeSheaf.pushforwardTensorLeftIso`、`tensorPushforwardUnitIso`（`VectorBundle/ProjectionFormula.lean`） | 任意 f と有限局所自由 E に対して E⊗f_*F≅f_*(f*E⊗F)。線束は `InvertibleSheaf.toFiniteLocallyFree`（`VectorBundle/FiniteLocallyFree.lean`）に渡す。 |
+| 高次射影公式と acyclic 比較 | `FiniteLocallyFreeSheaf.higherDirectImagePullbackIso`、`isZero_higherDirectImage_pullback`（`Cohomology/HigherDirectImage/ProjectionFormula.lean`）、`AlgebraicGeometry.Scheme.Hom.cohomologyPushforwardBaseLinearEquivOfIsZeroHigherDirectImage`（`Cohomology/PushforwardAcyclic/Linear.lean`） | Rⁿf_*O=0 なら有限局所自由 E の Rⁿf_*f*E=0。acyclic 比較は全正次数 Rⁱf_*F=0 を仮定して全次数の基底環線形比較を返す。2.2 の点 blowup は π_*O=O と Rⁱπ_*O=0 を先に供給する。 |
+| finite twist epi と生成 | `AlgebraicGeometry.Proj.eventually_exists_generatingSections_tensor_twistingSheaf`、`eventually_exists_epi_free_tensor_twistingSheaf`（`ProjectiveSpectrum/TwistingSheaf/GlobalGeneration.lean`） | quasi-compact Proj、次数 1 の homogeneous basic opens による被覆、F qc finite type。十分大きい全 n で有限 generating sections と `free I ⊗ O(-n)→F` の epi を返す。 |
+| ample の affine-section 入力 | `TauCeti.AlgebraicGeometry.LineBundleClass.IsAmple.exists_finset_isAffineOpen_nonvanishingLocus`（`LineBundle/Ample.lean`）、`AlgebraicGeometry.Scheme.Modules.eventually_exists_generatingSections_tensor_tensorPow`（`LineBundle/TwistedSections.lean`） | 前者は被覆ごとに異なる正の冪を許し、後者は一つの L 自身の affine nonvanishing cover を要求する。有限個の指数の共通倍数と剰余類 twist による接続は 2.0 に残す。どちらも Serre 高次消滅の宣言ではない。 |
+| coherent kernel | `AlgebraicGeometry.Scheme.Modules.isFinitePresentation_kernel`（`Modules/FinitePresentation/Abelian.lean`） | X locally Noetherian、f:M→N、M qc finite type、N qc なら kernel f は finite presentation。大域への貼り合わせも既存。 |
+| scheme-theoretic support | `AlgebraicGeometry.Scheme.Modules.exists_iso_pushforward_subschemeι_annihilator`、`isFinite_subschemeι_annihilator_comp`（`Modules/SchemeTheoreticSupport.lean`） | M qc、affine sections finite のとき M≅i_*G を ann(M) の閉部分スキームで与える。後者は support が有限、X→S locally finite type、S locally Artinian なら支持スキームが S 上 finite。局所長和との同定は 2.0 の接続目標。 |
 
-`AlgebraicGeometry.Scheme.Modules.isFinitePresentation_pushforward_of_isFinite`（`Modules/Quasicoherent/Pushforward/Finite.lean`）を、局所 Noetherian な標的への有限射の coherent pushforward に使う。`AlgebraicGeometry.Scheme.Hom.cohomologyPushforwardBaseLinearEquiv`（`Cohomology/ClosedImmersion/Linear.lean`）は基底上の閉埋込みに対する全次数の比較を与える。一般の有限射の全次数比較・射影公式、必要な Serre vanishing と支持次元の消滅は 2.0 で供給する。
+射影空間では `TauCeti.SymmetricAlgebra.cohomologyZeroTwistingSheafLinearEquiv`（`Cohomology/ProjectiveSpace/TwistingSheaf.lean`）と `Module.Basis.subsingleton_cohomology_twistingSheaf_of_lt_card`、`nonempty_linearEquiv_cohomology_top_twistingSheaf`、`finite_cohomology_twistingSheaf`（`Cohomology/ProjectiveSpace/HigherCohomology.lean`）を使う。後二者は任意 commutative ring R 上の有限基底を仮定し、最上次数を全指数が負の Laurent monomials の自由加群と同定し、全 m∈ℤ・全 q∈ℕ の O(m) の有限生成 cohomology を供給する。有限性の定理では基底の型が `Nontrivial`、すなわち射影空間の次元が正であることを保持する。
 
-射影空間では `TauCeti.SymmetricAlgebra.cohomologyZeroTwistingSheafLinearEquiv`（`Cohomology/ProjectiveSpace/TwistingSheaf.lean`）の非負 twist の H⁰ 計算と、`Module.Basis.subsingleton_cohomology_twistingSheaf_of_lt_card`（`Cohomology/ProjectiveSpace/HigherCohomology.lean`）の中間消滅を利用する。`TauCeti.AlgebraicGeometry.projectiveLine.finite_cohomology`（`Cohomology/ProjectiveLine/Basic.lean`）と、同 namespace の `finrank_cohomology_zero_twistingSheaf`、`finrank_cohomology_one_twistingSheaf`（前記 `TwistingSheaf.lean` と `Cohomology/ProjectiveLine/NegativeTwist.lean`）が ℙ¹ の有限性と O(d) の計算を供給する。ℙ² の必要な上次数計算と trace・pairing は 2.0・2.3 の目標に含める。
+`Module.Basis.nonempty_linearEquiv_cohomology_top_twistingSheaf_dual`（`Cohomology/ProjectiveSpace/TopDual.lean`）は `card κ=n+2`、`j:ℕ`、`j=-m-card κ` のとき Hⁿ⁺¹(O(m)) と次数 j の斉次部分の R-dual の線形同型の `Nonempty` を与える。ℙ² の上次数は既存供給であり、2.3 に残るのは native 標準束との比較、trace・cup product、blowup の connecting/restriction map との整合性である。選ばれた同型の存在を自然な trace pairing と同一視しない。
+
+`AlgebraicGeometry.Proj.segre` と `isClosedImmersion_segre`（`ProjectiveSpectrum/Segre.lean`）は任意係数環上の射影空間の積からの Segre 閉埋込みを供給する。2.0 は生成 section の積の線束を Aʳ と同定し、固定した very ample 束と Aʳ⊗H⁻¹ の大域生成から Aʳ の射影埋込みを得る。そこから剰余類 twist を通して任意の豊富 A の Serre vanishing へ進む。
+
+`AlgebraicGeometry.Scheme.Modules.eulerCharBelow`、`eulerCharBelow_congr`、`eulerCharBelow_eq_add`（`Cohomology/EulerCharacteristic.lean`）を χ とその同型不変性・加法性に使う。定義された有限和から cohomology の有限性は得られず、加法性の各仮定を 2.0 から渡す。曲面では切断次数 3 と H³ の消滅を使用する。次元 ≤2 の射影スキーム上の coherent cohomology の有限性、必要な Serre vanishing、支持次元消滅は、上表の供給を組み合わせる比較定理として 2.0 で構成する。
 
 ### From Tau Ceti: 曲面と線束
 
-`TauCeti.AlgebraicGeometry.LineBundleClass` は可逆層の同型類を与える（`TauCeti/AlgebraicGeometry/LineBundle/Class.lean`）。Picard 群の加法記法はその `Additive` を用いる。同 namespace の `LineBundleClass.pullback` と `LineBundleClass.pullbackHom`（`LineBundle/Functoriality.lean`）は射 f:X→Y に対し Y の線束を X へ引き戻す。
+以下のファイルは `TauCeti/AlgebraicGeometry/` 以下を指す。`TauCeti.AlgebraicGeometry.LineBundleClass`（`LineBundle/Class.lean`）の `Additive` を Picard 群に用い、`LineBundleClass.pullback` と `pullbackHom`（`LineBundle/Functoriality.lean`）を幾何的引き戻しとする。Cartier 因子との辞書は `TauCeti.AlgebraicGeometry.Scheme.CartierDivisor.toLineBundleClassHom`（`CartierDivisor/Picard.lean`）と、integral X に対する `classGroupAddEquivLineBundleClass`（`CartierDivisor/ClassGroup.lean`）を使う。
 
-Cartier 因子との辞書には既存 `TauCeti.AlgebraicGeometry.Scheme.CartierDivisor.toLineBundleClassHom`（`CartierDivisor/Picard.lean`）と `TauCeti.AlgebraicGeometry.Scheme.CartierDivisor.classGroupAddEquivLineBundleClass`（`CartierDivisor/ClassGroup.lean`）を使う。後者は整スキーム X について Cartier 類群と `Additive (LineBundleClass X)` の同型を与える。2.1 はこの辞書を利用し、有効類、標準束、曲面交点に接続する。
+| 用途 | 供給宣言とファイル | 仮定と残る接続 |
+|---|---|---|
+| surface pairing | `TauCeti.AlgebraicGeometry.Chow.classIntersectionNumber`、`classIntersectionNumber_comm`（`Chow/SurfaceIntersection.lean`） | Picard 類上の χ(O)−χ(L⁻¹)−χ(M⁻¹)+χ(L⁻¹M⁻¹)、χ の切断次数 3。定義・降下・対称性が既存。properness・dim≤2・cohomology finite を仮定しない定義なので、2.0 の有限性・消滅、2.1 の restriction degree 比較と bilinearity を別に供給する。同ファイルの `Num` は現段階では quotient type であり、数値類の群構造の供給とは扱わない。 |
+| 正則曲面の素因子 | `AlgebraicGeometry.Scheme.IdealSheafData.isEffectiveCartier_vanishingIdeal_closure_singleton_of_isRegular`（`EffectiveCartierDivisor/Factorial.lean`） | native IsRegular、全点 coheight≤2、codimension-one point の closure の reduced ideal を effective Cartier にする。正則局所環の高さ 1 の主性の再証明は不要。 |
+| 標準束 | `TauCeti.AlgebraicGeometry.differentialForms`、`isInvertible_differentialForms`、`differentialFormsIsoDet`（`Modules/Differentials/Forms.lean`） | smooth relative dimension n の最高次 n-forms は invertible で det Ω と同型。n=2 を用いる。curve Serre duality の canonicalBundle は surface duality の供給ではない。 |
+| 特異曲線の次数 | `TauCeti.AlgebraicGeometry.LineBundleClass.eulerDegree_mul_of_isIntegral`（`CartierDivisor/Effective/Degree.lean`）、`intersectionNumber_mul_of_isClosedImmersion`（`IntersectionNumber/Basic.lean`） | 前者は proper integral dim≤1 と H⁰(O),H¹(O) finite、後者は proper X への closed immersion i、integral C、dim C=1、基底射の一致を仮定。C の regularity は要求しない。制限の Euler degree と native surface B の一致は 2.1。 |
+| 局所長と非負性 | `LineBundleClass.intersectionNumber_inv_mk_toInvertibleSheaf_eq_finsum_of_isClosedImmersion`、`intersectionNumber_inv_mk_toInvertibleSheaf_nonneg_of_ne`（`IntersectionNumber/Basic.lean`） | 前者は proper curve と適切に交わる effective Cartier の ambient stalk 長の residue-degree 付き和。後者は regular coheight≤2 の異なる素因子。ideal の可逆層は O(-D) なので正の D には inverse class を取る。 |
+| 曲線射の射影公式 | `LineBundleClass.intersectionNumber_pullback_of_finrank_eq`、`intersectionNumber_pullback_of_isDominant`（`IntersectionNumber/ProjectionFormula.lean`） | 前者は finite flat constant rank、後者は target curve の全 stalk が valuation ring であることを要求する。非 flat な特異曲線の normalization は供給範囲外で、conductor による degree comparison を 2.1 に残す。 |
+| 正規化と δ | `AlgebraicGeometry.Scheme.genus_eq_add_finrank_globalSections_cokernel_of_surjective`、`finrank_globalSections_cokernel_unitToPushforwardObjUnit_eq_zero_iff_isIso`（`Curves/Normalization.lean`） | proper integral curves の finite modification、同じ基底体上。genus-drop は source の global functions が基底体から全射であることを要求する。δ=0 iff iso は有限性を内部で供給する。正規化の regularity と curve 性も同ファイル。2.3 は p_a と native genus を同定して適用する。 |
+| genus zero の実際の同型 | `AlgebraicGeometry.Scheme.exists_iso_projectiveLine_of_genus_eq_zero_of_section`（`Curves/Genus/Zero.lean`） | `X.IsCurveOver k`、codimension-one stalk DVR、dim H¹(O)=0、Spec k→X が構造射の section なら X≅P¹_k を k 上に返す。ℂ 上の p_a=0 からこれらの条件を渡すのが 2.3 の接続。 |
+| P¹ の線束分類 | `TauCeti.AlgebraicGeometry.projectiveLine.picardDegreeEquiv`、`eulerDegree_twistingSheaf`、`nonempty_iso_twistingSheaf_iff`（`LineBundle/ProjectiveLine.lean`） | 任意体 k で Additive Pic(P¹_k)≃+ℤ、degree O(n)=n、L≅O(n) iff degree L=n。2.2 の法束、2.5 の rank-two splitting に用いる。 |
+| 曲線の高次数入力 | `InvertibleSheaf.subsingleton_cohomology_one_of_smooth_of_two_mul_genus_sub_two_lt_eulerDegree`（`Curves/HighDegree.lean`）、`isGloballyGenerated_of_smooth_of_two_mul_genus_le_eulerDegree`（`Curves/GlobalGeneration.lean`） | smooth proper geometrically connected curve。deg>2g−2 なら H¹=0、代数閉体上 deg≥2g なら globally generated。特異・非被約曲線の positive degree⇒ample は 2.4 に残る。 |
+| 例外曲線の carrier | `AlgebraicGeometry.Scheme.IdealSheafData.IsExceptionalCurveOfFirstKind`、`isExceptionalCurveOfFirstKind_iff_intersectionNumber`（`IntersectionNumber/ExceptionalCurve/Basic.lean`） | E effective Cartier、E≅P¹_κ、conormal≅O(1)。後者が self-intersection −1 との比較を与える。ℂ 上の carrier への接続と収縮の存在・smooth target は 2.4 の目標。 |
 
-`TauCeti.AlgebraicGeometry.LineBundleClass.intersectionNumber`（`IntersectionNumber/Basic.lean`）は指定した曲線への線束制限の Euler 次数を与える。既存の加法性 `LineBundleClass.intersectionNumberHom` は、整・proper・相対次元 ≤1、余次元 1 の局所環が DVR、H¹(O_C) の有限次元性などを仮定する。2.0 が有限性を供給し、2.1 の有限正規化の比較が特異曲線を含む次数へ接続する。この宣言を曲面の Picard 群上の交点形式そのものとはしない。
+有限台の層への tensor による Euler 標数には `AlgebraicGeometry.Scheme.Modules.eulerCharBelow_tensor_of_finite_support`（`VectorBundle/EulerCharacteristic.lean`）を用いる。有限台の quasi-coherent finite-type M と階数 r の局所自由 E に対して χ(E⊗M)=rχ(M) を各切断次数で与える。`TauCeti.AlgebraicGeometry.InvertibleSheaf.toFixedRankOne`（`VectorBundle/FixedRank.lean`）で r=1 とし、2.1 の conductor cokernel の比較に直接使う。代数閉体上の rational point には `IsLocallyClosed.exists_rationalPoint_mem`（`RationalPoint/Image.lean`）を使い、非空の locally closed 部分集合と有限型性を渡す。2.3 の genus-zero theorem にはこの点を構造射の section として渡す。
 
-`AlgebraicGeometry.Scheme.Modules.eulerCharBelow` と `eulerCharBelow_congr`、`eulerCharBelow_eq_add`（`TauCeti/AlgebraicGeometry/Cohomology/EulerCharacteristic.lean`）を Euler 標数とその同型不変性・加法性に使う。`finrank` による有限和の定義だけから有限次元性は得られない。2.0 で有限性と高次消滅を証明し、曲面では切断次数 3 の加法性に必要な H³ の消滅を供給する。
+`AlgebraicGeometry.Scheme.IdealSheafData.blowup`、`blowupToBase`、`blowupLift`（`Blowup/IdealSheaf.lean`、`UniversalProperty.lean`）を閉点 ideal の blowup に用いる。同 namespace の `blowupChart`、`isPullback_blowupChart`、`isProper_blowupToBase_of_isLocallyNoetherian`（`Blowup/IdealSheaf.lean`）、`isEffectiveCartier_comap_blowupToBase`（`Blowup/ExceptionalDivisor.lean`）、`isIso_blowupToBase_restrict_of_disjoint_support`（`Blowup/Restriction.lean`）が chart、properness、引き戻し中心 ideal、中心外同型を供給する。2.2 は点 blowup の regular-parameter 表示、E≅P¹、Picard・標準類の式、滑らかさ・射影性、π_*O=O と Rⁱπ_*O=0、基点解消を供給する。cohomology の大域比較機構は前契約の射影公式・acyclic comparison を使う。
 
-`AlgebraicGeometry.Scheme.IdealSheafData.blowup`、`blowupToBase`、`blowupLift`（`TauCeti/AlgebraicGeometry/Blowup/IdealSheaf.lean` と `UniversalProperty.lean`）を閉点 ideal の blowup とその普遍性に用いる。曲面での Picard・標準類の式、滑らかさ、コホモロジー比較、縮約、共通解消は 2.2–2.4 の対象である。
+`AlgebraicGeometry.Scheme.Hom.existsUnique_comp_eq_of_universallyClosed`（`Descent/Contraction.lean`）は c:X→Y の universally closed 性・surjectivity、全 open U の `IsIso (c.app U)`、h:X→Z の fibre 上一定性を仮定して、唯一の g:Y→Z で c≫g=h を与える。2.2–2.4 は縮約後の射の下降と一意性にこの定理を使い、収縮射自体や構造層比較の存在を出力と誤認しない。一般 surface RR、surface Serre trace duality、Nakai、曲面収縮の存在は実装済み供給ではなく、それぞれ 2.3–2.4 の reusable slice とする。
+
+### From Tau Ceti: 節点サイクルの正規化
+
+3.4 の節点条件には `TauCeti.AlgebraicGeometry.AtWorstNodalOfRelativeDimensionOne`（`TauCeti/AlgebraicGeometry/Curves/Node/Relative.lean`）を用いる。`AlgebraicGeometry.Scheme.isFinite_blowupToBase_singularLocus`、`surjective_blowupToBase_singularLocus`、`isRegular_blowup_singularLocus`（同 `Node/Normalization.lean`）は、任意体上の節点曲線の特異部分を blowup した射の有限性・全射性と始域の正則性を供給する。同ファイルの `natCard_preimage_blowupToBase_singularLocus_eq_two_of_mem_support` は分離閉体上で各節点の二枝を数える。ここでは ℂ と被約反標準境界へ適用する。
+
+`AlgebraicGeometry.Scheme.dualGraph`、`branchPointEquiv`、`dualGraphVertexEquiv`、`dualGraphEdgeEquiv`（同 `Node/DualGraph.lean`）は、分離閉体上の `PrestableFamily` と滑らかな標点を入力に取り、正規化成分、節点、二枝を対応させる。D には proper・幾何学的連結・節点曲線の条件を渡して `PrestableFamily` を供給し、標点集合を空にする。幾何学的連結性は代数閉体 ℂ 上での連結性から得る。サイクルの向きはこの二枝を保持する有限グラフ上に追加するデータであり、自己節点を捨てる単純グラフへ変更しない。
+
+`TauCeti.NodeAlgebra.branchSheafSequence`、`branchSheafSequence_shortExact`、`branchSheafSequenceMiddleIso`、`branchSheafSequenceRightIso`（同 `Node/BranchSequence.lean`）は split node R[x,y]/(xy) 上の加法的完全列と実際の pushforward の同定を供給する。一般の節点との比較には `Scheme.exists_etale_nodeAlgebra`（同 `Node/LocalNormalForm.lean`）を用いる。 ℂ 上の特異点では étale な係数環の当該成分を選び、局所式 uv=h の h が 0 になることを確認する。導手の split model の計算には `TauCeti.NodeAlgebra.branchConductor_eq_prod`、`branchConductorQuotientEquiv`、`map_jacobianIdeal_eq_branchConductor`、`comap_branchConductor_eq_jacobianIdeal`（`TauCeti/RingTheory/Node/Conductor.lean`）を使う。3.4 は実際の正規化の導手正方形を用い、単元の持ち上げによって差写像の核の局所自由性と制限・降下の同値を証明する。split node との比較は étale 局所で行い、既約節点へ Zariski 局所の二成分分解を要求しない。その後、ℙ¹ の線束分類から多重次数零の Picard 群を計算する。加法的完全列や解析的な節点接着を、スキーム上の可逆層の降下の完成とは扱わない。
 
 ### From Tau Ceti: 代数的トーリック曲面
 
-`TauCeti.Toric.Fan` と `TauCeti.Toric.Fan.algebraicRealization`（`TauCeti/Geometry/Toric/Algebraic/Fan/Basic.lean` と `Scheme.lean`）から有限扇のスキームを得る。Fan の型そのものは滑らかさ・完備性を含まないため、それらを 2.5 の入力に明記する。単項式の付値、境界交点、共通細分と模型変更の必要な特殊形は 2.5 と Layer 5 で証明する。
+既存の扇・スキーム・射をそのまま幾何の carrier とする。以下は基準版で供給される宣言であり、組合せ的正則性から本書で必要な曲面の定理への比較は 2.5 に置く。
+
+| 供給元 | 既存の対象・定理 | 2.5・Layer 5 の追加目標 |
+| --- | --- | --- |
+| [Fan/Basic](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Basic.lean)、[Regular](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Regular.lean) | `TauCeti.Toric.Fan`（有限性を含む）、`FanHom`、`Fan.IsComplete`、`Fan.IsRegular` | 階数 2 の原始隣接射線・巡回順と曲面境界の辞書 |
+| [Fan/Scheme](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Scheme.lean)、[Over](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Over.lean) | `Fan.algebraicRealization`、開 chart 被覆、`FanHom.algebraicMap` と id/comp、ℂ 上の構造射 | 滑らかさ・分離性・射影性、Picard と境界交点 |
+| [DenseTorus](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/DenseTorus.lean)、[Fan/DenseTorus](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/DenseTorus.lean) | 零錐の座標環と ℂ[Hom(N,ℤ)] の `denseTorusCoordinateRingEquiv`、`denseTorusι` の開埋込み、`denseTorusι_comp_algebraicMap` | det による N≅N∨ の規約比較、稠密性、単項式の境界因子と付値 |
+| [DualSemigroup/Regular](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/DualSemigroup/Regular.lean)、[Fan/Normal](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Normal.lean) | `regularDualSemigroupEquiv`、`isNormalScheme_algebraicRealization` | rank 2 の標準 chart への移送と scheme smoothness の証明 |
+| [Fan/StarSubdivision](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/StarSubdivision.lean)、[Subdivision](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Subdivision.lean) | 正則扇の `starSubdivisionAlong`、正則性と台の保存、`IsSubdivision.toFanHom` | 二次元錐の星型細分射と実際の閉点 blowup の同型、共通の滑らかな細分 |
+| [Fan/TorusAction/Action](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/TorusAction/Action.lean)、[Naturality](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/TorusAction/Naturality.lean) | native algebraic torus action と `FanHom` の同変性 | トーラス平行移動による中心整列と Picard 標識・周期の適合 |
+| [Fan/AffineSpace/Scheme](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/AffineSpace/Scheme.lean)、[ProjectiveSpace/Proj](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/ProjectiveSpace/Proj.lean) | `Fan.affineSpaceAlgebraicIso` と `Fan.projectiveSpaceToProj` の `IsIso` | ℂ²・ℙ² の実際の幾何への適用、Hirzebruch 曲面と模型存在 |
+
+`Fan.IsRegular` は原始射線が基底へ延びる組合せ条件である。既存の normality や開トーラス埋込みだけを、滑らかな射影曲面・境界の構成完了とはしない。2.5 の比較の出力を以後の曲面 API に渡す。
+
+5.4 の t(u)=u+[det(u,v)]₊v は半平面ごとに整数線形であり、全体を一個の `FanHom` として扱わない。必要な直線に適合した階数 2 の扇を取り、各半平面の整数 transvection による像錐を `Fan.ofCones` で束ね、面・交わり・正則性を保つことを証明する。その上で実際の基本変換、X 有理写像と全 Picard 作用の比較を行う。
 
 ### 契約の基準となる版
 
 | 対象 | 基準版 |
 | --- | --- |
-| Lean | [v4.36.0-rc2](https://github.com/leanprover/lean4/releases/tag/v4.36.0-rc2) |
-| Mathlib | [1b1ccf4b088b32fa3f23f2de1127433254a81e1e](https://github.com/leanprover-community/mathlib4/tree/1b1ccf4b088b32fa3f23f2de1127433254a81e1e) |
-| Tau Ceti | [2fd255d997f47c0b5d834ee416c7015d55444ce5](https://github.com/TauCetiProject/TauCeti/tree/2fd255d997f47c0b5d834ee416c7015d55444ce5) |
+| Lean | [v4.37.0-rc1](https://github.com/leanprover/lean4/releases/tag/v4.37.0-rc1) |
+| Mathlib | [31ce06eaadf4a200c0e1407c5f10953cf606b8f8](https://github.com/leanprover-community/mathlib4/tree/31ce06eaadf4a200c0e1407c5f10953cf606b8f8) |
+| Tau Ceti | [1bf97b4973827fc8b005ddbe5372e6f08a28ddbb](https://github.com/TauCetiProject/TauCeti/tree/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb) |
 
 各供給宣言はこの版の対象と型を契約の基準とする。文献の引用は数学的証明の参照先であり、Lean の axiom としての外部入力ではない。
 
@@ -1044,4 +1217,5 @@ Cartier 因子との辞書には既存 `TauCeti.AlgebraicGeometry.Scheme.Cartier
 - **[Brosnan-S]** P. Brosnan, *Algebraic Surfaces*, [Theorem 2.1](https://www.math.umd.edu/~pbrosnan/notes/Surfaces/sect0007.html)、[Proposition 3.1・Corollary 3.2](https://www.math.umd.edu/~pbrosnan/notes/Surfaces/sect0016.html)、[Theorem 3.4](https://www.math.umd.edu/~pbrosnan/notes/Surfaces/sect0017.html)、[Theorem 4.40](https://www.math.umd.edu/~pbrosnan/notes/Surfaces/sect0039.html)。Theorem 2.1 は Nakai–Moishezon の主張、他の節は随伴・RR・Castelnuovo 収縮の代数的証明の参照先。
 - **[Debarre-S]** O. Debarre, *Introduction to Mori Theory*, [著者講義録](https://perso.imj-prg.fr/wp-content/uploads/debarre-pub/M22.pdf), Theorem 2.28・Corollary 2.29 (pp.19–20)、Theorem 2.37・Corollary 2.38 (pp.23–25)、Corollary 3.4、§3.2 の Definition 3.5・Theorem 3.6・Lemma 3.7、§4.1 の Theorem 4.1 (pp.40–41)。射影コホモロジー、次数と交点、曲面の Nakai–Moishezon の証明を使用する。
 - **[Vakil-S]** R. Vakil, *Complex Algebraic Surfaces*, [Class 16](https://math.stanford.edu/~vakil/02-245/sclass16A.pdf) と [Class 17](https://math.stanford.edu/~vakil/02-245/sclass17A.pdf), §§1–2。平方非負の有理曲線の存在と最小有理曲面の分類。分類の結論は Class 17, §2, pp.3–4。
-- **[Stacks]** *The Stacks Project*: [Tag 0FVV](https://stacks.math.columbia.edu/tag/0FVV), Lemma 48.27.1(6),(7)；[Tag 0C2N](https://stacks.math.columbia.edu/tag/0C2N), Lemma 54.16.9(1)；[Tag 0C2I](https://stacks.math.columbia.edu/tag/0C2I)；[Tag 0C5R](https://stacks.math.columbia.edu/tag/0C5R), Lemma 54.17.1；[Tag 0C5S](https://stacks.math.columbia.edu/tag/0C5S), Lemma 54.17.2。
+- **[Stacks]** *The Stacks Project*: [Tag 0C46](https://stacks.math.columbia.edu/tag/0C46), Section 53.19；[Tag 0FVV](https://stacks.math.columbia.edu/tag/0FVV), Lemma 48.27.1(6),(7)；[Tag 0C2N](https://stacks.math.columbia.edu/tag/0C2N), Lemma 54.16.9(1)；[Tag 0C2I](https://stacks.math.columbia.edu/tag/0C2I)；[Tag 0C5R](https://stacks.math.columbia.edu/tag/0C5R), Lemma 54.17.1；[Tag 0C5S](https://stacks.math.columbia.edu/tag/0C5S), Lemma 54.17.2。
+
