@@ -1,6 +1,8 @@
 module
 
 public import Mathlib
+public import TauCeti.Algebra.Module.Primitive
+public import TauCeti.LinearAlgebra.BilinearForm.Characteristic
 
 /-!
 # 反標準サイクルのクラスターモジュラー群: target signatures
@@ -10,9 +12,13 @@ public import Mathlib
 
 ここでは整数双線形形式、有限自由加群、その等長同型を用いて、
 境界サイクルの向きを反転する対合の存在を述べる。
-単模性は交点形式による双対加群への写像の全単射性、
-δ の原始性は δ を 1 に移す整数線形形式の存在で表す。
-有限自由加群では後者は ℤδ が原始部分加群であることと同値である。
+単模性には既存の `LinearMap.IsPerfPair`、δ の原始性には
+`TauCeti.IsPrimitive`、characteristic 条件には `LinearMap.BilinForm.IsCharacteristic`
+を用いる。これらはそれぞれ交点形式が完全双対を与えること、δ を 1 に移す
+整数線形形式の存在、B(δ,x)−B(x,x) が 2 の倍数であることを表す。
+境界直交部分加群にも既存の `B.orthogonal` と `Submodule.span` を用いる。
+整数格子の行列式・判別式を使う際は既存の `IntegralLattice.ofIntegralForm` と
+`ofIntegralForm.carrierIsometry` で接続する。新たな格子ラッパーは定義しない。
 
 符号付きクラスター・モジュラー群と Picard 等長変換群の反同型、
 語の関係式の完全判定、Cremona 等長変換群との比較については、
@@ -45,9 +51,8 @@ n=2 では D₀·D₁=2 となる。f は格子の元であり、曲線や切断
 theorem exists_cycle_reversing_involution
     (L : Type*) [AddCommGroup L] [Module ℤ L]
     [Module.Free ℤ L] [Module.Finite ℤ L]
-    (B : LinearMap.BilinForm ℤ L)
+    (B : LinearMap.BilinForm ℤ L) [B.IsPerfPair]
     (hSymm : B.IsSymm)
-    (hUnimodular : Function.Bijective (B : L → (L →ₗ[ℤ] ℤ)))
     (n : ℕ) [NeZero n]
     (D : ZMod n → L)
     (hIntersection : ∀ i j : ZMod n,
@@ -55,9 +60,8 @@ theorem exists_cycle_reversing_involution
         (-2 : ℤ) * (if i = j then 1 else 0) +
           (if j = i + 1 then 1 else 0) +
           (if j = i - 1 then 1 else 0))
-    (hPrimitive : ∃ ℓ : L →ₗ[ℤ] ℤ, ℓ (∑ i : ZMod n, D i) = 1)
-    (hCharacteristic : ∀ x : L,
-      Even (B x x - B x (∑ i : ZMod n, D i))) :
+    (hPrimitive : TauCeti.IsPrimitive (∑ i : ZMod n, D i))
+    (hCharacteristic : B.IsCharacteristic (∑ i : ZMod n, D i)) :
     ∃ (j₀ : ZMod n) (f : L) (g : B.IsometryEquiv B),
       B f f = -1 ∧
       (∀ j : ZMod n, B f (D j) = if j = j₀ then 1 else 0) ∧
@@ -65,8 +69,9 @@ theorem exists_cycle_reversing_involution
       g f = f ∧
       g (∑ i : ZMod n, D i) = (∑ i : ZMod n, D i) ∧
       (∀ j : ZMod n, g (D j) = D (2 * j₀ - j)) ∧
-      (∀ κ : L, (∀ j : ZMod n, B κ (D j) = 0) →
+      (∀ κ : L, κ ∈ B.orthogonal (Submodule.span ℤ (Set.range D)) →
         g κ = -κ + (2 * B κ f) • (∑ i : ZMod n, D i)) := by
   sorry
 
 end QPainleveRoadmap.SignedClusterModularGroup
+
