@@ -1,0 +1,2 @@
+-- Human-owned root of the roadmap target signatures. Deliberately carries no imports:
+-- `lakefile.toml` globs every module under `QPainleveRoadmap/`.

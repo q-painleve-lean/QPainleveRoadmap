@@ -1,0 +1,19 @@
+name = "QPainleveRoadmap"
+defaultTargets = ["QPainleveRoadmap", "Completed"]
+
+# Target signatures consume Tau Ceti and Mathlib declarations directly, as in the Tau Ceti
+# roadmap. Switch this to QPainleve once a target needs QPainleve's own definitions.
+[[require]]
+name = "TauCeti"
+git = "https://github.com/TauCetiProject/TauCeti"
+rev = "main"
+
+# Human-owned roadmaps: markdown plus Lean target signatures. `sorry` is allowed here
+# (these are goals, not proofs), so this library builds without `warningAsError`.
+[[lean_lib]]
+name = "QPainleveRoadmap"
+globs = ["QPainleveRoadmap.*"]
+
+[[lean_lib]]
+name = "Completed"
+globs = ["Completed.+"]
