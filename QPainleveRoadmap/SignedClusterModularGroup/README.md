@@ -334,6 +334,8 @@ native Picard 群への準同型 (x,a)↦π*x+a[E] が同型となることと�
 
 最小有理曲面の分類の入力 h¹(O_Y)=h⁰(O_Y(2K_Y))=0 は、2.2 の比較と pluricanonical section の点 blowup 不変性から得る。[Vakil-S] Class 16 の Pic(Y)=ℤK_Y の場合の排除には、2.3 の単模性と rank Pic(Y)+K_Y²=10 を使う。曲面分類の証明に一般の Noether 公式や位相的 Poincaré 双対性は追加しない。散乱図や鏡の構成は依存しない。
 
+Hirzebruch 曲面 F_k の負の切断 C₀、正の切断 C₊=C₀+kF、ruling のファイバー類 F について、k=1,2 の低次数補間を供給する。C₀ の補集合を O_{ℙ¹}(k) の全空間と比較し、相異なる k+1 本のファイバー上の C₀ 外の指定点を通る C₀+kF の切断を、次数 k の斉次多項式の補間から構成する。グラフが ℙ¹ に同型な閉曲線であること、C₀ と交わらないこと、指定点で滑らかなこと、Picard 類が C₀+kF であることまで含める。F₁ の二点に対する交点評価と、F₂ の三点に対する評価を 5.1 で使う。後者の座標式と用法は [補足 E](#e-因数分解から語への橋渡し) に記す。この補間補題は平面への双有理写像や homaloidal identities を仮定しない。
+
 *Needs:* 0.1、2.1–2.4。既存 `Toric.Fan`、`FanHom`、正則双対半群、密トーラス、トーラス作用、`starSubdivisionAlong` と affine/projective space の比較。追加する幾何の範囲は [代数的トーリック曲面の契約](#from-tau-ceti-代数的トーリック曲面) に記す。
 
 ### 2.6 平方零の対から境界格子へ
@@ -534,11 +536,17 @@ E_h={e:e²=e·K_Y=−1, e·h>0} と実際の内部 (−2) 曲線類の集合 Δ 
 
 証明で使う線形系は、2.1 の native `completeLinearSystem` と Cartier–Picard の辞書に接続する。指定写像からの直線系の引き戻しは完全線形系全体とは限らないため、対応する線束の大域 section 空間内の有限次元 `Submodule ℂ` としてその線形部分系を保持する。固定成分の除去、移動部分の基点多重度、blowup 後の変換則は 2.1–2.2 の section と因子の比較へ接続して証明する。有効で線形同値な因子の集合やその類の辞書を別に定義しない。
 
-証明を、同 Appendix の Definitions 8.5・8.10 の Sarkisov degree、多重度の境界制約（Proposition 8.7）、高多重度基点と F₀・F₁ の例外（Lemma 8.8）、基本変換の公式（Lemma 8.9）、F₀ に必要な不等式とその証明中の二つの数値恒等式（Lemma 8.12）、有限リンク列による減少（Proposition 8.11）に分ける。ℙ² または F_a から ℙ² への写像に帰着し、移動線形系の λ と全基点多重度の和 M に対して (6λ,M)∈ℕ² の辞書式順を用いる。減少は選ばれた有限ブロック全体について証明し、準備のトーリック操作の一段ごとには要求しない。停止時の境界を保つ同型を最後に分離する。
+ℙ² または F_k から指定された ℙ² への写像に帰着し、解消上の実際の射 f:Z→X と g:Z→ℙ² を保持する。F_k 上の移動線形系を Γ=aF+bC₀、C₀²=−k、C₊=C₀+kF と書く。全変換例外類に関する基点多重度 μᵢ は無限近接点を含み、零の多重度も許す。平面次数 d に対する λ=d/3 と F_k に対する λ=b/2、M=−K_X·Γ−3=Σμᵢ による (6λ,M)∈ℕ² の辞書式順を用いる。標的射 g は各ブロックで固定し、節点細分を追加した場合だけその引き戻しに置き換える。
+
+有限ブロックによる減少を、境界上の基点の選択から直接構成する。2.2 の点 blowup 分解と二形式の位数計算から、全中心が境界上にあり、滑らかな境界点の上では固有変換に沿う一本の鎖をなすことを先に示す。この局所補題は 5.2 の表示変更を入力にしない。その上で homaloidal identities、多重度の境界成分上の総和評価、祖先による多重度の上界を証明する。high を 2μᵢ>b と定める。high な切断または corner の proper center では b を保つ基本変換により M を下げる。その他の high centers は相異なる二本の invariant fibers の開部分に高々一つずつあり、各々が proper である。high が存在する場合、この個数 r∈{1,2} に対して weighted defect から k≤r+1 を得る。k≥1 の残余場合は (k,r)=(1,1),(2,1),(1,2),(2,2),(3,2) に限られる。境界成分の標的での次数が 0 または 1 であることから、この五場合では b≥2 も得る。
+
+これら五場合では、有限整数列に対する数値的 Noether 不等式、補助多重度列の平方和・総和、2.5 の低次数補間を使って、正の切断上の実際の基点を選ぶ。補助列の幾何的実現可能性は仮定せず、整数列の不等式と中心の所在の証明を分ける。同じ点の上の鎖を含め、各鎖の先頭から大きい order を選び、必要な高々三つの中心を実行可能な順序にする。正の開切断上の変換は二本の invariant fibers 上の保持点と多重度を変えない。F₁ からの平面経由ブロック、または F₀ で ruling を交換して二つの保持点を使うブロックへ接続し、終端の fiber degree b′ が 0<b′<b を満たすことを証明する。五場合の中心選択と数値計算を [補足 E](#e-因数分解から語への橋渡し) にすべて展開する。
+
+平面の場合、F₀ の一・二基点の場合、high のない F₀・F₁ の場合も同じ辞書式帰納法に入れる。各ブロックは、同じ指定標的への射を持つ実際の有限経路、新しい次数の正確な式、その正値性と厳密減少を返す。保持点以外の全中心の再番号付けや、ブロック途中の high set の記述を primary degree の減少の入力にはしない。従って準備後の corner 上の high orders の配置を追跡する帰納法を要せず、停止時の境界を保つ同型を最後に分離できる。[HKL] Definitions 8.5・8.10、Proposition 8.7、Lemmas 8.8–8.9・8.12 を次数・局所公式の参照先とし、Proposition 8.11 に対応する減少は本書の五分岐の構成で証明する。
 
 さらに Theorem 8.4 の証明で各部分合成の正則性を追跡する。共通解消の存在や「模型の集合が連結」という弱い存在だけで、指定された写像の因数分解を置き換えない。[補足 E](#e-因数分解から語への橋渡し) に減少指標と語への橋渡しを記す。
 
-*Needs:* 2.1–2.2、2.4–2.5。native 線形系と section の比較、共通解消、Hirzebruch 面の ruling、境界を保つ双有理写像。
+*Needs:* 2.1–2.2、2.4–2.5。native 線形系と section の比較、共通解消、Hirzebruch 面の ruling と k=1,2 の切断補間、境界を保つ双有理写像。有限整数列の補題、切断上の鎖の実行、五つの減少ブロックは本項で構成し、一般の Noether–Castelnuovo 分解は入力にしない。
 
 ### 5.2 正則な対数的射と指定された表示変更
 
@@ -554,7 +562,7 @@ p 上の最初の中心 k を相異なる点の操作との交換で取り出し
 
 5.1 の各正則な部分合成へこの二定理を適用し、指定された同型そのものを表示変更へ移す。各表示変更から X 変異と Picard 引き戻しへの比較は 5.4 の局所定理で与える。[補足 E](#e-因数分解から語への橋渡し) に証明を記す。
 
-*Needs:* 2.1–2.2、2.5、3.1、5.1。境界付値、単純極を持ち零を持たない対数二形式。
+*Needs:* 2.1–2.2、2.5、3.1。境界付値、単純極を持ち零を持たない対数二形式。正則な射の正規化と局所的な基本変換の比較は 5.1 に依存せず、因数分解の全段階への適用で 5.1 を使う。
 
 ### 5.3 終端ラベル同定の整数性
 
@@ -616,9 +624,11 @@ zᵛ の ruling のファイバー類を `F=Σ_{det(u,v)>0}det(u,v)[D̄_u]` と�
 
 **Checks.** ε₁₂=1 で同じ μ₁ を二度行うと X 写像は恒等だが、固定した中心の枠では c₂ は c₂/c₁ に移る。中心写像だけに対合性を要求すると誤る。ε の全成分が 3 の倍数で m=3 の場合、原始核ベクトル x は Σxᵢ²=0 mod 3 を満たす。非零平方は 1 なので三座標が全て非零であり、二座標だけが非零の候補は和 2 となって除外される。重複中心を逆順に交換する条件 cᵢ≠cⱼ を落とすと、後の中心が前の例外曲線上の近接点である場合に同じ blowup 配置を表さなくなる。
 
+5.1 の整数列補題は、幾何的実現を入力にせず、零の項を加えても使えることを確認する。五分岐では t=0 や w=0 を許す場合、同一の開切断点の上の鎖から複数の中心を選ぶ場合、F₂ の片寄った場合で捨てる側の fiber の corner を選ぶ場合も含める。F₂ の均衡した場合に使う νᵢ≤w は二次補間から別に証明し、総和・平方和だけからは推論しない。全ブロックで終端次数の正確な式と正値性・厳密減少、同じ指定標的への可換性を確認する。
+
 ### Dependencies
 
-5.1 → 5.2、0.4 と 1.1 と 3.2 → 5.3、5.2 → 5.4、5.3–5.4 → 5.5。模型変更の存在からクラスター語への変換には、正則な部分合成と終端格子の整数性を両方使う。
+2.2 の対数的中心の局所計算と 2.5 の低次数補間 → 5.1、5.1 → 5.2 の全因数分解への適用、0.4 と 1.1 と 3.2 → 5.3、5.2 → 5.4、5.3–5.4 → 5.5。5.2 の正則な射の正規化自体は 5.1 を使わない。模型変更の存在からクラスター語への変換には、正則な部分合成と終端格子の整数性を両方使う。
 
 ## Layer 6: 向きを保つ群の決定
 
@@ -1027,9 +1037,176 @@ q(Y,D)=rank Pic(Y)+2−#D は内部 blowup で 1 増え、節点 blowup では�
 
 [HKL] Appendix の Lutz Theorem 8.4 の入力は、一つの対からの指定された二つのトーリック収縮 p,p′ である。出力は p′p⁻¹ 自体の因数分解で、各部分合成と p の合成が元の対の節点 blowup 上で正則になる。有限個の節点 blowup を共通細分 Z にまとめる。
 
-この有限列の存在証明も形式化の対象とする。一般のトーリック両端をトーリック操作で ℙ² と Hirzebruch 面へ帰着し、F=ℙ² または F_a から ℙ² への、対数二形式を非零定数倍まで保つ双有理写像を扱う。引き戻した直線系について、F=ℙ² では次数 d に対し λ=d/3、F_a では [HKL] Definition 8.5 の係数 b に対し λ=b/2、M は近接基点も含む全基点多重度の和とする。6λ は非負整数である。
+この有限列の存在証明も形式化の対象とする。一般のトーリック両端をトーリック操作で ℙ² と Hirzebruch 面へ帰着する。以下は [HKL] Proposition 8.11 に対応する減少を、元の境界上の中心選択から構成する証明である。主張の参照先は同 Theorem 8.4、対数的中心の制約と基本変換の公式の参照先は Proposition 8.7 と Lemma 8.9 とする。指定された写像の解消から始め、補助的な多重度列に平面双有理写像としての実現を要求しない。
 
-高多重度基点がある非同型の場合、Proposition 8.11 の選ぶ許されたリンクの有限ブロックの後で (6λ,M) が辞書式順に真に減少する。切断上の多重度 m>λ の場合は λ を保ち、M′=M+b−2m<M となる。ファイバー上の高多重度基点では、必要に応じて F₀ へ準備変形し、Lemma 8.12 の証明の二つの数値恒等式を用いたブロックで λ を減らす。高多重度基点がない非同型の場合は、Lemma 8.8 の F₀ の ruling 交換または F₁ の負切断縮約で λ を減らす。準備段階で M の単調性は主張しない。従って ℕ² の整礎性から有限性が従い、残る正則同型を最後のトーリック同型とする。任意の中間トーリック模型にこの degree を定義する必要はない。
+標的の帰着で選んだトーリック経路 τ:T′⇢ℙ² と、その各段への始域の正則な射もデータとして保持する。必要な節点細分の後で g=τ∘p′ とし、以下の帰納法でこの g を固定する。最後に τ の逆経路を連結して元の指定標的 T′ へ戻す。始点側のトーリック帰着も同様に経路と正則な射を保持する。
+
+#### 指定標的と多重度の評価
+
+帰納状態は、実際の射 f:Z→X、g:Z→ℙ² と共通の被約極境界を持ち、X は ℙ² または F_k とする。g の直線系を f で押し下げた移動線形系を Γ と書く。本節の ℓ は g*H、その全変換例外類に関する表示は ℓ=f*Γ−ΣμᵢEᵢ である。μᵢ は非負整数で、無限近接点と多重度零の補助 blowup も添字に含める。本節では M=−K_X·Γ−3 と定め、以下の homaloidal identities により M=Σμᵢ≥0 を得る。これにより M の変換則を、未選択の全中心を再番号付けすることなく交点数から比較できる。
+
+平面では Γ=dH について Σμᵢ=3d−3、Σμᵢ²=d²−1。F_k では C₀²=−k、F²=0、C₀·F=1、C₊=C₀+kF、Γ=aF+bC₀ とし、
+
+    Σμᵢ=2a+(2−k)b−3,   Σμᵢ²=2ab−kb²−1,
+    b>0,   a≥kb.
+
+これらは ℓ²=1、K_Z·ℓ=−3、点 blowup の交点公式から得る。Γ の移動性から nef 性を得て a≥kb を示す。帰納量は平面上で (2d,M)、F_k 上で (3b,M)、すなわち (6λ,M) とし、非負性を示した上で ℕ² の辞書式順で扱う。
+
+まず f の点 blowup 列の全中心が、各段階の極境界上にあることを 2.2 から示す。境界外・滑らかな境界点・節点での blowup の新例外曲線に沿う二形式の位数は、それぞれ 1・0・−1 である。一度生じた零因子の固有変換は以後の点 blowup でも残るため、最終的な零因子の不存在から境界外の中心は除かれる。この局所補題は因数分解や 5.2 の正規化を入力にせず、以下の中心制約と後段の正規化の双方で使う。
+
+境界成分 B の開部分 B° に射影される orders には、無限近接点を含む総和評価 Σ_{over B°}μᵢ≤Γ·B を証明する。滑らかな境界点の blowup の新例外成分は極ではないので、その点の上の以後の対数的中心は境界の固有変換に沿う一本の鎖になる。固有変換との交点公式と ℓ の nef 性が総和評価を与える。また例外曲線との交点から、子孫の order は proper な祖先の order 以下となる。proper center が曲線 B 上にあるときの個別評価 μ≤Γ·B も使う。
+
+Z の各境界成分 B_Z は g により境界直線へ双有理に写るか、点へ縮約されるので、ℓ·B_Z∈{0,1} であることを証明する。非縮約成分の像が境界直線であることは二形式の位数の一致から、その次数が 1 であることは g の双有理性から従う。この評価には対象対の δ の nef 性や平方零を仮定しない。
+
+F_k 上で high を 2μᵢ>b とする。high の proper な祖先が corner または切断上にあれば、そこで基本変換を行える。それ以外で high が存在する場合は、二本の invariant fibers の開部分に high が各々高々一つあり、その数 r は 1 または 2 である。各 high order m は b/2<m≤b を満たす。high が無限近接点なら同じ開 fiber 上に high な祖先もあることになり総和評価に反するため、high 自身が proper である。
+
+残余場合では low 項の μ(2μ−b) が非正、各 high 項が b² 以下なので、
+
+    2ab−(k+2)b²+3b−2=Σμᵢ(2μᵢ−b)≤rb².
+
+a≥kb と合わせて (k−r−2)b²+3b−2≤0、従って k≤r+1 を得る。k≥1 では (k,r)=(1,1),(2,1),(1,2),(2,2),(3,2) だけが残る。さらに b=1 なら high orders はすべて 1、low orders はすべて 0 で、正の切断の固有変換の ℓ-次数は a となる。前段の境界像の評価と a≥k≥1 より a=k=1、homaloidal identities より r=0 となり矛盾する。従ってこの五場合では b≥2 である。
+
+#### 有限整数列の二つの補題
+
+第一は数値的 Noether 不等式である。非負整数の有限列 ν、整数 d≥2 が
+
+    Σνᵢ=3d−3,   Σνᵢ²=d²−1
+
+を満たすとする。必要なら零を補い、上位三項を c₁≥c₂≥c₃ とする。平方和から cᵢ≤d−1 であり、二つの総和式から
+
+    (d−1)(c₁+c₂+c₃−d−1)
+      =(c₁−c₃)(d−1−c₁)+(c₂−c₃)(d−1−c₂)
+        +Σ_{i≥4}νᵢ(c₃−νᵢ)≥0
+
+を得る。よって c₁+c₂+c₃≥d+1。これは整数列の補題として証明し、その列を実現する平面変換や一般の Noether–Castelnuovo 定理は入力にしない。
+
+第二は二次曲面型の列の個数評価である。整数 0<w<b、非負整数列 ν が
+
+    Σνᵢ=2b+2w−3,   Σνᵢ²=2bw−1,
+    νᵢ≤w,   2νᵢ≤b
+
+を満たすとき、2νᵢ>w を満たす項は少なくとも三つある。実際、H={i:2νᵢ>w}、r=#H、s=Σ_Hνᵢ とすると、low 項の非正性と high 項の νᵢ(2νᵢ−w)≤w(2νᵢ−w) から
+
+    2w(b−s)+(r−2)w²≤2−3w<0.
+
+もし r≤2 なら 2s≤rb より同じ左辺は (2−r)w(b−w)≥0 以上となり矛盾する。この補題でも必要なのは有限整数列だけである。
+
+#### 正の切断上の中心を実行する
+
+k≥1 の F_k で正の切断上の proper center の order が c>0 なら、その点の blowup と fiber contraction により
+
+    (k,a,b) ↦ (k−1,a−c,b)
+
+を得る。開切断上の点なら mutation、corner ならトーリック基本変換である。中心が開切断上なら変換は二本の invariant fibers の近傍で同型なので、そこに保持した proper points qᵢ と orders mᵢ は変わらない。出力には指定標的 g と新しい射 f′、係数の式、保持点の近傍での同型を含める。共通 blowup の局所 chart で、前後の対数二形式の引き戻しが非零定数倍まで一致することも証明し、同じ被約極境界を保つ。この比較は以下の全基本変換とトーリック操作で保持し、5.4 の X 変異との比較を入力にしない。
+
+同じ開切断の点の上の鎖から続けて中心を使う場合、最初の blowup の後の次の中心は、縮約する fiber の固有変換から離れた正の切断上の点である。その点は変換後に再び proper となり、局所同型により order が保存される。各鎖の orders は非増加なので、有限個の鎖の現在の先頭のうち最大のものを選び、同値の order では祖先を先にすれば、上位 N 個を順に実行できる。ここで N≤k であり、五分岐には N≤3 だけを使う。逆中心は負の切断側に生じるが、それらの新しい high set を中心選択の仮定に追加しない。
+
+第一の終端ブロックは F₁ の開 fiber point q、order m に対するものである。0<a−m<b なら、負の切断をトーリックに縮約して次数 a の平面へ移し、q の境界辺の反対頂点を吹き上げる。q は正の切断上に移るのでそこで mutation し、F₀ の ruling を交換する。新しい fiber degree は正確に a−m である。2m>b なら a<b+m<3m なので、平面上の high 条件も成立する。この式と指定標的の保持を出力し、平面次数 a に対する減少だけで元の b に対する減少を代用しない。
+
+第二の終端ブロックは F₀ の二本の invariant fibers の開点 q₁,q₂、orders m₁,m₂ に対するものである。Γ₀=a₀F+bC、s=m₁+m₂、a₀<s とする。ruling を交換すると二点は反対側の切断上に来る。同じ新 fiber 上にあれば、その固有変換と ℓ の nef 交点から s≤a₀ となるので、二点は異なる新 fibers 上にある。q₁ で F₀→F₁ の mutation を行うと、q₂ は正の切断上に同じ order で残る。そこで mutation して F₀ に戻し、ruling を交換し直すと
+
+    b_new=b+a₀−m₁−m₂<b.
+
+終端の移動系の両係数は非負で、同じ g の解消に対する平方和は 2a₀b_new=1+Σ(μ′ᵢ)²>0 だから b_new>0 でもある。このブロックに「他の全 orders が low」という仮定は不要である。
+
+F_k の正の開切断で k 個の中心 c₁,…,c_k を使った後には a₀=a−C、C=Σcᵢ となる。従って C>a−s を証明できれば第二のブロックへ接続できる。五分岐で選ぶ cᵢ は元の low orders なので cᵢ≤b/2 であり、以下では終端次数の正値性を数値からも確認する。
+
+#### 五つの残余場合
+
+以下の μ_rest は、元の high orders だけを取り除いた、零を含む全ての残りの orders の列とする。各項は b/2 以下である。二つの high orders がある場合は m₁=b−u、m₂=b−v、0≤u,v<b/2 と書く。corner 上の proper order は同じ fiber 上の mᵢ と合わせて b 以下なので、それぞれ u または v 以下であり、その子孫にも同じ上界が成立する。
+
+**(1) F₁、high が一つ。** order を m とする。weighted defect から
+
+    2b(a−b−m)≤(2m−b)(m−b)−3b+2<0
+
+なので a−m<b。もし a≤m なら m²≤2ab−b²−1≤m²−(b−m)²−1 となり矛盾する。従って 0<a−m<b であり、第一の終端ブロックを適用する。
+
+**(2) F₂、high が一つ。** a=2b+h、m=b−u、t=h+u=a−b−m と置く。weighted defect は 0≤u≤t<b/2 を与える。正の切断上の全 proper orders が t 以下と仮定する。祖先の評価、負の切断の交点 h≤t、保持 fiber の残りの総和 u≤t、反対の開 fiber の各 order≤b/2 と総和≤b から、Q=Σμᵢ²、M=Σμᵢ に対して
+
+    Q−tM≤m(m−t)+b(b/2−t)
+
+となる。しかし homaloidal identities による左辺と右辺の差は
+
+    (b²−4t²)/2+u(t−u)+3t−1>0
+
+である。正値性には b≥2、0≤2t<b、u≤t を使う。従って正の切断に order c>t の proper center がある。同じ fiber 上の corner なら c≤b−m=u≤t なので、この中心は保持点 q の fiber 上にはない。そこで F₂→F₁ と変換し、q で第一の終端ブロックを使うと
+
+    b_new=a−c−m=b+t−c<b,   b_new≥b/2+t>0.
+
+この選択では反対の fiber 上の corner も許す。
+
+**(3) F₁、high が二つ。** s=m₁+m₂、t=a−s と置く。2.5 の一次補間による C₀+F の切断を q₁,q₂ に通し、交点評価から t≥0 を得る。weighted defect により 2t<b。t<v なら a−m₁=b−v+t<b なので q₁ で第一の終端ブロックを使える。t<u なら q₂ を使う。
+
+残る t≥u,v の場合は d=b+t とし、補助整数列 (t,u,v,μ_rest) を取る。二つの homaloidal identities からその総和は 3d−3、平方和は d²−1 となる。d≥2 なので数値的 Noether 不等式を適用できる。全項が b/2 以下であり、上位三項の一つでも t 以下なら三項の和は b+t=d 以下になる。従って上位三項は全て t を超え、三項の和は d より大きい。
+
+fiber の残りと corners の上の orders は u または v 以下なので、この三項は正または負の開切断の上にある。三項全部が負の切断の上にあれば、その総和は a−b=d−u−v≤d 以下となり矛盾する。従って正の開切断に order c>t の proper な祖先がある。この中心で F₁→F₀ を行うと a₀=a−c<s となり、第二の終端ブロックは
+
+    b_new=b+t−c<b,   b_new≥b/2+t>0
+
+を与える。
+
+**(4) F₂、high が二つ。** a=2b+h、w=h+u+v=a−m₁−m₂ と置く。残りの平方和 2bw−u²−v²−1≥0 より w>0。weighted defect は
+
+    2bw≤2b²−u(b−2u)−v(b−2v)−3b+2<2b²
+
+を与えるので 0<w<b である。
+
+まず u≥h+v の場合を扱い、t=h+v と置く。w=u+t>0 と u≥t より u≥1。正の切断の全 proper orders が t 以下と仮定する。負の切断上の orders は h≤t、q₂ の開 fiber の残りの総和は v≤t、q₁ の開 fiber の残りの総和は u で抑えられる。後者の μ(μ−t) の総和は u(u−t) 以下なので、
+
+    Q−tM≤m₁(m₁−t)+m₂(m₂−t)+u(u−t).
+
+homaloidal identities を代入した差は
+
+    E=2u(b−u)−2h²−3hv−2v²+3h+3v−1
+      ≥hv+2u+3t−1≥1.
+
+最初の下界には b≥2u+1 と u≥h+v を使う。従って正の切断上に c>t の proper center がある。その中心は q₂ の fiber 上にはないので、F₂→F₁ と第一の終端ブロックにより
+
+    b_new=a−c−m₂=b+t−c<b,   b_new≥b/2+t>0
+
+を得る。q₁ 側の corner を使って q₁ が proper でなくなっても、保持する q₂ は変わらない。v≥h+u の場合は添字を交換する。
+
+残る u<h+v、v<h+u の場合は u,v<w/2 である。補助整数列 ν=(u,v,μ_rest) は
+
+    Σνᵢ=2b+2w−3,   Σνᵢ²=2bw−1,   2νᵢ≤b
+
+を満たす。さらに全項の νᵢ≤w を、元の F₂ 上の交点評価から得る。正の開切断上の proper center p に対し、2.5 の二次補間により q₁,q₂,p を通る C₀+2F の切断を取れば、
+
+    a≥m₁+m₂+μ_p,   μ_p≤w.
+
+具体的には F₂∖C₀ を O_{ℙ¹}(2) の全空間とし、正の切断を y=0、二本の invariant fibers を x=0,∞ とする。標準的な二つの自明化で q₁=(0,A)、q₂=(∞,B)、p=(α,0)、A,B,α∈ℂ× と書くと、求める切断は
+
+    y=A−(A/α+Bα)x+Bx²
+
+のグラフである。x=∞ の自明化では y/x² の値が B となる。負の切断上は h≤w、fiber の残りと corners は u,v≤w、子孫は祖先で抑えられるので、ν の全項に上界 w が成立する。補助的な非トーリック中間模型を構成する必要はない。
+
+前段の整数列の個数評価から 2νᵢ>w を満たす項は三つ以上ある。追加した u,v、開 fibers の残り、corners の上の項は w/2 未満である。負の開切断の上の総和は h≤w なので、そこには w/2 を超える項が高々一つしかない。従って正の開切断の鎖上に二項以上あり、鎖の先頭から order c₁,c₂>w/2 の二中心を実行できる。二回の変換で F₂→F₀、a₀=a−c₁−c₂<s となる。第二の終端ブロックは
+
+    b_new=b+w−c₁−c₂<b,   b_new≥w>0
+
+を与える。最後の下界には c₁+c₂≤b を使う。
+
+**(5) F₃、high が二つ。** a=3b+h、w=h+u+v と置く。weighted defect は 0≤2w<b を与える。d=b+w とし、補助整数列 (w,u,v,μ_rest) を取ると、その総和は 3d−3、平方和は d²−1 である。d≥2 なので数値的 Noether 不等式を適用する。全項が b/2 以下で、上位三項の一つでも w 以下なら和は b+w=d 以下になるから、上位三項 c₁,c₂,c₃ は全て w を超え、和 C は d より大きい。
+
+負の切断上は h≤w、開 fibers の残りと corners の上は u,v≤w なので、この三項は正の開切断の鎖上にある。祖先を先にする最大 order の選択により、三回の変換を順に実行して F₃→F₂→F₁→F₀ を得る。d=a−m₁−m₂ だから a₀=a−C<s。第二の終端ブロックから
+
+    b_new=2b+w−C<b,   b_new≥b/2+w>0
+
+を得る。下界には C≤3b/2 を使う。したがって最長の残余ブロックも、正の切断上の三回と ruling 交換後の二回の mutation で済む。
+
+#### 全場合を覆う停止性と正則性
+
+平面次数 d>1 では Σμᵢ(3μᵢ−d)=3d−3>0 なので、proper な祖先に order m>d/3 を持つ点がある。境界頂点ならそこを吹いて F₁ へ移し、境界辺の開点なら反対頂点の blowup、正の切断上の mutation、ruling 交換で F₀ へ移す。いずれも新しい fiber degree は d−m>0 であり、3(d−m)<2d。補助的な中心は境界頂点だけである。
+
+F_k で high がない場合、weighted defect は非正である。k=0 なら a<b なので ruling 交換、k=1 なら 2a<3b なので負切断縮約で primary degree を下げる。k≥2 は a≥kb と weighted defect の式に反する。high の proper な祖先が切断または corner にあれば、そこで基本変換を行う。b は変わらず、交点数による M の式から M′=M+b−2m<M となる。
+
+high が存在し、その全てが開 fibers 上にある場合、k≥1 は五分岐で処理済みである。k=0 では [HKL] Lemma 8.12 の数値評価、または同じ weighted defect から、一点なら 2(a+b−m)<3b、二点なら a<m₁+m₂ を得る。一点の場合は ruling を交換してその点で mutation し、F₁ の負切断を縮約して次数 a+b−m の平面へ移す。平方和の恒等式から a>0、また m≤b なので、この平面次数も正である。二点の場合は第二の終端ブロックにより 0<a+b−m₁−m₂<b を得る。従って全ての非終端状態で (6λ,M) が辞書式順に厳密に下がる。停止時は平面次数 d=1 であり、残余写像は境界三角形を保つ射影同型となる。これを最後のトーリック同型とし、そのトーラス上の並進も枠のデータに保持する。
+
+各ブロックで選ぶ滑らかな中心は、残余写像の実際の proper base point である。現在の射 f はその点の blowup を経由するので、Z→Bl_p X をもう一方の fiber contraction と合成して、次のトーリック面への正則な射を得る。他の中心が縮約 fiber 上にあっても、この合成は正則であり、逆中心上に生じる近接配置の全分類を要しない。正の切断上で連続して使う中心と、二つの保持点の輸送だけを局所同型で追跡する。各終端で新しい射を点 blowup 列に分解し直し、同じ標的 g に対する次数の標識を得る。
+
+追加する corner blowup については、現在の f が既にその blowup を経由するか、その corner の近傍で f が同型なので始域の対応する節点を吹くかに分けて持ち上げる。節点細分を追加するたびに f と g、および以前の全部分合成を同じ射で前合成する。整礎帰納法が作る有限列の最後の始域が、全部分合成に共通の節点細分 Z になる。各段の実際の射 hᵢ が hᵢ₊₁=φᵢhᵢ を満たすため、始点側の帰着、終端同型、τ の逆経路を含む列の合成は指定された p′p⁻¹ に一致する。τ の逆経路の正則な射には、標的帰着で保持した射を同じ Z へ引き戻して使う。全 Picard 引き戻しもこの可換図式で合成する。5.4 の X 変異との比較は、こうして構成した因数分解の後に適用する。
+
+#### 正則な射の内部中心列への正規化
 
 各写像 hᵢ:Z→Tᵢ を点 blowup の逆列に分解する。Tᵢ のトーラスの対数二形式を引き戻すと、Z の被約境界に単純極を持ち、零因子を持たない。中心での局所計算を、単元因子を除いた次の三つの形で行う。一方の blowup chart x=u、y=uv では、
 
@@ -1397,7 +1574,7 @@ E≅ℙ¹_ℂ と conormal O(1) を得た後は、前契約の `Scheme.IdealShea
 | [DualSemigroup/Regular](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/DualSemigroup/Regular.lean)、[Fan/Normal](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Normal.lean) | `regularDualSemigroupEquiv`、`isNormalScheme_algebraicRealization` | rank 2 の標準 chart への移送と scheme smoothness の証明 |
 | [Fan/StarSubdivision](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/StarSubdivision.lean)、[Subdivision](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/Subdivision.lean) | 正則扇の `starSubdivisionAlong`、`isRegular_starSubdivisionAlong`、`support_starSubdivisionAlong`、`starSubdivisionAlong_isSubdivision`、`IsSubdivision.toFanHom` と細分射の `algebraicMap` | 階数 2 の二次元錐の固定点 blowup との基底上の同型、新射線と例外 Cartier 因子・被約境界・密トーラスの対応、共通の滑らかな細分と節点 blowup 列の比較 |
 | [Fan/TorusAction/Action](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/TorusAction/Action.lean)、[Naturality](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/TorusAction/Naturality.lean) | native algebraic torus action と `FanHom` の同変性 | トーラス平行移動による中心整列と Picard 標識・周期の適合 |
-| [Fan/AffineSpace/Scheme](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/AffineSpace/Scheme.lean)、[ProjectiveSpace/Proj](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/ProjectiveSpace/Proj.lean) | `Fan.affineSpaceAlgebraicIso` と `Fan.projectiveSpaceToProj` の `IsIso` | ℂ²・ℙ² の実際の幾何への適用、Hirzebruch 曲面と模型存在 |
+| [Fan/AffineSpace/Scheme](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/AffineSpace/Scheme.lean)、[ProjectiveSpace/Proj](https://github.com/TauCetiProject/TauCeti/blob/1bf97b4973827fc8b005ddbe5372e6f08a28ddbb/TauCeti/Geometry/Toric/Algebraic/Fan/ProjectiveSpace/Proj.lean) | `Fan.affineSpaceAlgebraicIso` と `Fan.projectiveSpaceToProj` の `IsIso` | ℂ²・ℙ² の実際の幾何への適用、Hirzebruch 曲面と模型存在、F_k∖C₀ と O_{ℙ¹}(k) の全空間の比較、k=1,2 の切断補間と Picard 類・滑らかさの証明 |
 | torus の Picard 群 | `LineBundleClass.specEquivPic`・`subsingleton_spec`（`TauCeti/AlgebraicGeometry/LineBundle/Affine/Picard.lean`）、Mathlib `CommRing.Pic` の GCD-domain 自明性 instance（`Mathlib/RingTheory/PicardGroup.lean`） | native Spec の線束類と代数的 Picard 群を同定。後者は `[CommRing R] [IsDomain R] [IsGCDMonoid R]` を要求。階数 2 の character lattice の基底と `AddMonoidAlgebra.curryAlgEquiv`、`LaurentPolynomial.isLocalization`、`UniqueFactorizationMonoid.of_isLocalization` を用いて torus の Laurent 環が UFD であることを渡す。 |
 | 境界による Picard 表示 | 前掲 `CartierDivisor/Excision.lean` と `ker_weilToLineBundleClassHom`、`Scheme.exists_unit_germToFunctionField_eq_of_ord_eq_zero_of_isIntegrallyClosed`（`TauCeti/AlgebraicGeometry/Scheme/Regular.lean`）、`AddMonoidAlgebra.isUnit_iff_exists_single`・`unitsEquiv`（`TauCeti/Algebra/MonoidAlgebra/Units.lean`） | excision には regular surface と全 codimension-one complement の有限列挙を渡す。正則単元の判定には integral・locally Noetherian、非空 open、そこにある全 stalk の integral closedness、全 codimension-one orders=0 が必要。単元分類は係数に `Nontrivial`・`NoZeroDivisors`、指数に `TwoUniqueSums` を要求。2.5 で残るのは native toric chart・境界との比較と character の位数公式であり、一般の Picard excision と単元分類は再構成しない。 |
 
@@ -1421,7 +1598,7 @@ E≅ℙ¹_ℂ と conormal O(1) を得た後は、前契約の `Scheme.IdealShea
 - **[GHK-M]** M. Gross, P. Hacking, S. Keel, *Moduli of surfaces with an anti-canonical cycle*, [arXiv:1211.6367v5](https://arxiv.org/abs/1211.6367v5)、[著者公開 PDF](https://paulhacking.github.io/mlp.pdf)。Lemma 1.3、Theorem 1.8、Lemmas 2.1・2.5・2.7・2.8、Propositions 2.6・2.9、Corollary 2.10、Lemmas 2.13–2.15・4.5、Theorem 4.7 の証明。主な使用範囲は周期・中心再構成・自己同型核・根のない対の錐。
 - **[GHK-Mirror]** M. Gross, P. Hacking, S. Keel, *Mirror symmetry for log Calabi–Yau surfaces I*, [arXiv:1106.4977v3](https://arxiv.org/abs/1106.4977v3)、[著者公開 PDF](https://paulhacking.github.io/mirror_symmetry.pdf)。この版の Proposition 1.3 がトーリック模型の存在を与える。
 - **[GHK-C]** M. Gross, P. Hacking, S. Keel, *Birational geometry of cluster algebras*, [arXiv:1309.2573v2](https://arxiv.org/abs/1309.2573v2)、[著者公開 PDF](https://paulhacking.github.io/cluster.pdf)。式 (1.4)、Lemma 3.2、Proposition 5.4、Theorems 5.5–5.6 の局所幾何、電荷と周期。有限指数の全格子への延長は本書の補足 C で展開する。
-- **[HKL]** P. Hacking, A. Keating, with an appendix by W. Lutz, *Homological mirror symmetry for log Calabi–Yau surfaces*, [arXiv:2005.05010v3](https://arxiv.org/abs/2005.05010v3)、[著者機関 PDF](https://api.repository.cam.ac.uk/server/api/core/bitstreams/14b8f6c3-49a3-4961-a139-d11093383ddc/content)。Appendix の Definitions 8.1・8.5・8.10、Theorem 8.4、Propositions 8.7・8.11、Lemmas 8.8–8.9・8.12 とその証明。指定した toric contractions の因数分解と正則な部分合成を使用する。
+- **[HKL]** P. Hacking, A. Keating, with an appendix by W. Lutz, *Homological mirror symmetry for log Calabi–Yau surfaces*, [arXiv:2005.05010v3](https://arxiv.org/abs/2005.05010v3)、[著者機関 PDF](https://api.repository.cam.ac.uk/server/api/core/bitstreams/14b8f6c3-49a3-4961-a139-d11093383ddc/content)。Appendix の Theorem 8.4 を指定した toric contractions の因数分解と正則な部分合成の主張の参照先とする。Definitions 8.1・8.5・8.10、Proposition 8.7、Lemmas 8.8–8.9・8.12 は次数・中心制約・局所公式の参照先である。Proposition 8.11 に対応する有限経路の減少は、5.1 と補足 E の五分岐で証明し、準備後の high corner 配置の分類を入力にしない。
 - **[BGM]** M. Bershtein, P. Gavrylenko, A. Marshakov, *Cluster integrable systems, q-Painlevé equations and their quantization*, JHEP 02 (2018) 077。[出版社公開 PDF](https://link.springer.com/content/pdf/10.1007/JHEP02(2018)077.pdf)、[arXiv:1711.02063](https://arxiv.org/abs/1711.02063)。式 (2.9)、§3.1 冒頭、Theorem 3.1 と Remark 3.1、式 (3.1)–(3.3)。部分群包含と全群一致の区別を保持する。
 - **[Mizuno]** Y. Mizuno, *q-Painlevé equations on cluster Poisson varieties via toric geometry*, Selecta Math. (2024)。[出版社公開 PDF](https://link.springer.com/content/pdf/10.1007/s00029-023-00906-2.pdf)、[arXiv:2008.11219](https://arxiv.org/abs/2008.11219)。Definitions 2.1・2.3・2.7・2.8・3.3、Lemma 3.6、Theorems 3.34–3.35。周囲格子と主張の全射性を本書と区別する。
 - **[Sakai]** H. Sakai, *Rational surfaces associated with affine root systems and geometry of the Painlevé equations*, Comm. Math. Phys. 220 (2001)。[DOI](https://doi.org/10.1007/s002200100446)、[著者プレプリント](https://www.math.kyoto-u.ac.jp/preprint/99/10.ps)。§4 の (Cr1)–(Cr3)、§6 Theorem 26。二面体群の記号を比較するときは位数も明記する。
