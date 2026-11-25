@@ -532,13 +532,13 @@ E_h={e:e²=e·K_Y=−1, e·h>0} と実際の内部 (−2) 曲線類の集合 Δ 
 
 一つの Looijenga 対からの指定済みの二つのトーリック収縮 p,p′ を取る。双有理写像 p′p⁻¹ を、トーリック blowup/down、Hirzebruch 曲面の基本変換、トーリック同型の有限列に分解する。各部分合成と p の合成は、始域のある節点 blowup 上で正則であり、有限個の全部分合成に共通の節点細分を取れることを証明する。[HKL] Appendix, Lutz Theorem 8.4 の主張をこの特殊形で実装する。
 
-証明で使う線形系は、2.1 の native `completeLinearSystem` と Cartier–Picard の辞書に接続する。指定写像からの直線系の引き戻しは完全線形系全体とは限らないため、対応する線束の大域 section 空間内の有限次元 `Submodule ℂ` としてその線形部分系を保持する。固定成分の除去、移動部分の基点多重度、blowup 後の変換則は 2.1–2.2 の section と因子の比較へ接続して証明する。有効で線形同値な因子の集合やその類の辞書を別に定義しない。
+指定標的を座標平面に帰着し、共通解消の二射 h:Z→X、g:Z→ℙ² と直線類 H=g*O(1) を保持する。H=h*L−ΣmⱼEⱼ と全変換例外類で展開すると mⱼ=H·Eⱼ は近接中心を含む多重度である。副次数を **M=(−K_X)·L−3** と定義する。K_Z·H=−3 から M=Σmⱼ≥0 が従う。平面では (2d,M)、線織面では (3b,M) を辞書式に比較する。基本変換における M の差は両端の模型上の交点で計算できる。
 
-証明を、同 Appendix の Definitions 8.5・8.10 の Sarkisov degree、多重度の境界制約（Proposition 8.7）、高多重度基点と F₀・F₁ の例外（Lemma 8.8）、基本変換の公式（Lemma 8.9）、F₀ に必要な不等式とその証明中の二つの数値恒等式（Lemma 8.12）、有限リンク列による減少（Proposition 8.11）に分ける。ℙ² または F_a から ℙ² への写像に帰着し、移動線形系の λ と全基点多重度の和 M に対して (6λ,M)∈ℕ² の辞書式順を用いる。減少は選ばれた有限ブロック全体について証明し、準備のトーリック操作の一段ごとには要求しない。停止時の境界を保つ同型を最後に分離する。
+Fₖ の不変ファイバーにだけ高い中心がある場合、正切断 S の固有変換は指定標的で一点または座標直線へ写る。従って H·S̃ は 0 または 1。正切断上の上位 k 個の位数を祖先優先で順次選び、そこで基本変換する。不足分は節点で補う。元の一つまたは二つの高い中心だけを標識し、必要なときは収縮したファイバーの逆中心に標識を移す。切断に残る次数の評価により、準備後の F₀ では標識における一中心または二中心のリンクで帰納指標の第一成分が必ず下がる。k=0 の場合にも同じ評価を使う。[選択・減少不等式・全分岐での終端と具体例](PositiveSectionDescent.md)
 
-さらに Theorem 8.4 の証明で各部分合成の正則性を追跡する。共通解消の存在や「模型の集合が連結」という弱い存在だけで、指定された写像の因数分解を置き換えない。[補足 E](#e-因数分解から語への橋渡し) に減少指標と語への橋渡しを記す。
+各部分合成と p の合成を共通の節点細分上の実際の射として運び、最終平面同型の後に標的のトーリックな準備を逆にたどって指定射 p′ を回収する。[補足 E](#e-因数分解から語への橋渡し) · [実装の移行手順と参考 Lean](SarkisovMigration.md)
 
-*Needs:* 2.1–2.2、2.4–2.5。native 線形系と section の比較、共通解消、Hirzebruch 面の ruling、境界を保つ双有理写像。
+*Needs:* 2.1–2.2、2.4–2.5。点 blowup の Picard 分解、曲線の固有変換と射影公式、節点細分、ruling と基本変換、対数二形式の極因子。
 
 ### 5.2 正則な対数的射と指定された表示変更
 
@@ -554,7 +554,7 @@ p 上の最初の中心 k を相異なる点の操作との交換で取り出し
 
 5.1 の各正則な部分合成へこの二定理を適用し、指定された同型そのものを表示変更へ移す。各表示変更から X 変異と Picard 引き戻しへの比較は 5.4 の局所定理で与える。[補足 E](#e-因数分解から語への橋渡し) に証明を記す。
 
-*Needs:* 2.1–2.2、2.5、3.1、5.1。境界付値、単純極を持ち零を持たない対数二形式。
+*Needs:* 正則射の正規化と単一の基本変換の比較には 2.1–2.2、2.5、3.1 を使う。指定された全経路への適用に 5.1 を使う。
 
 ### 5.3 終端ラベル同定の整数性
 
@@ -618,7 +618,7 @@ zᵛ の ruling のファイバー類を `F=Σ_{det(u,v)>0}det(u,v)[D̄_u]` と�
 
 ### Dependencies
 
-5.1 → 5.2、0.4 と 1.1 と 3.2 → 5.3、5.2 → 5.4、5.3–5.4 → 5.5。模型変更の存在からクラスター語への変換には、正則な部分合成と終端格子の整数性を両方使う。
+2.2 の極の局所計算 → 5.1 と 5.2 の正規化、5.1 → 5.2 の全経路への適用、0.4 と 1.1 と 3.2 → 5.3、5.2 → 5.4、5.3–5.4 → 5.5。模型変更の存在からクラスター語への変換には、正則な部分合成と終端格子の整数性を両方使う。
 
 ## Layer 6: 向きを保つ群の決定
 
@@ -1027,9 +1027,9 @@ q(Y,D)=rank Pic(Y)+2−#D は内部 blowup で 1 増え、節点 blowup では�
 
 [HKL] Appendix の Lutz Theorem 8.4 の入力は、一つの対からの指定された二つのトーリック収縮 p,p′ である。出力は p′p⁻¹ 自体の因数分解で、各部分合成と p の合成が元の対の節点 blowup 上で正則になる。有限個の節点 blowup を共通細分 Z にまとめる。
 
-この有限列の存在証明も形式化の対象とする。一般のトーリック両端をトーリック操作で ℙ² と Hirzebruch 面へ帰着し、F=ℙ² または F_a から ℙ² への、対数二形式を非零定数倍まで保つ双有理写像を扱う。引き戻した直線系について、F=ℙ² では次数 d に対し λ=d/3、F_a では [HKL] Definition 8.5 の係数 b に対し λ=b/2、M は近接基点も含む全基点多重度の和とする。6λ は非負整数である。
+この有限列の存在証明も形式化の対象とする。一般のトーリック両端をトーリック操作で ℙ² と Hirzebruch 面へ帰着し、F=ℙ² または F_a から ℙ² への、対数二形式を非零定数倍まで保つ双有理写像を扱う。引き戻した直線系について、F=ℙ² では次数 d に対し λ=d/3、F_a では [HKL] Definition 8.5 の係数 b に対し λ=b/2、副次数は M=(−K_F)·L−3 とする。平面では M=3d−3、Fₖ では L=aA+bS₋ に対して M=2a+(2−k)b−3 である。高い切断中心の位数を u とすると基本変換の後に M′−M=b−2u<0 となる。各端点で M=Σmⱼ なので (6λ,M) は非負整数の対である。
 
-高多重度基点がある非同型の場合、Proposition 8.11 の選ぶ許されたリンクの有限ブロックの後で (6λ,M) が辞書式順に真に減少する。切断上の多重度 m>λ の場合は λ を保ち、M′=M+b−2m<M となる。ファイバー上の高多重度基点では、必要に応じて F₀ へ準備変形し、Lemma 8.12 の証明の二つの数値恒等式を用いたブロックで λ を減らす。高多重度基点がない非同型の場合は、Lemma 8.8 の F₀ の ruling 交換または F₁ の負切断縮約で λ を減らす。準備段階で M の単調性は主張しない。従って ℕ² の整礎性から有限性が従い、残る正則同型を最後のトーリック同型とする。任意の中間トーリック模型にこの degree を定義する必要はない。
+平面の高多重度中心、線織面の高い切断中心、または高い中心がない場合の F₀・F₁ のリンクは [HKL] Appendix の計算を使う。高い点が不変ファイバーの開軌道上にしかない場合、その個数 r は準備前に一つまたは二つである。Fₖ の正切断上の上位 k 位数の和を W、準備前の高い位数を Mᵢ とすると、指定標的の座標三角形を使って 2(a−W−ΣMᵢ)<(2−r)b が得られる。F₀ の対応する proper center の位数 μᵢ は Mᵢ 以上である。r=1 では平面次数 a−W+b−μ₁、r=2 ではファイバー次数 a−W+b−μ₁−μ₂ になり、いずれも 6λ が真に下がる。準備後の他の基点の個数に制限を置かず、ブロック単位で整礎帰納を行う。[中心の輸送と不等式の証明](PositiveSectionDescent.md)
 
 各写像 hᵢ:Z→Tᵢ を点 blowup の逆列に分解する。Tᵢ のトーラスの対数二形式を引き戻すと、Z の被約境界に単純極を持ち、零因子を持たない。中心での局所計算を、単元因子を除いた次の三つの形で行う。一方の blowup chart x=u、y=uv では、
 
@@ -1421,7 +1421,7 @@ E≅ℙ¹_ℂ と conormal O(1) を得た後は、前契約の `Scheme.IdealShea
 - **[GHK-M]** M. Gross, P. Hacking, S. Keel, *Moduli of surfaces with an anti-canonical cycle*, [arXiv:1211.6367v5](https://arxiv.org/abs/1211.6367v5)、[著者公開 PDF](https://paulhacking.github.io/mlp.pdf)。Lemma 1.3、Theorem 1.8、Lemmas 2.1・2.5・2.7・2.8、Propositions 2.6・2.9、Corollary 2.10、Lemmas 2.13–2.15・4.5、Theorem 4.7 の証明。主な使用範囲は周期・中心再構成・自己同型核・根のない対の錐。
 - **[GHK-Mirror]** M. Gross, P. Hacking, S. Keel, *Mirror symmetry for log Calabi–Yau surfaces I*, [arXiv:1106.4977v3](https://arxiv.org/abs/1106.4977v3)、[著者公開 PDF](https://paulhacking.github.io/mirror_symmetry.pdf)。この版の Proposition 1.3 がトーリック模型の存在を与える。
 - **[GHK-C]** M. Gross, P. Hacking, S. Keel, *Birational geometry of cluster algebras*, [arXiv:1309.2573v2](https://arxiv.org/abs/1309.2573v2)、[著者公開 PDF](https://paulhacking.github.io/cluster.pdf)。式 (1.4)、Lemma 3.2、Proposition 5.4、Theorems 5.5–5.6 の局所幾何、電荷と周期。有限指数の全格子への延長は本書の補足 C で展開する。
-- **[HKL]** P. Hacking, A. Keating, with an appendix by W. Lutz, *Homological mirror symmetry for log Calabi–Yau surfaces*, [arXiv:2005.05010v3](https://arxiv.org/abs/2005.05010v3)、[著者機関 PDF](https://api.repository.cam.ac.uk/server/api/core/bitstreams/14b8f6c3-49a3-4961-a139-d11093383ddc/content)。Appendix の Definitions 8.1・8.5・8.10、Theorem 8.4、Propositions 8.7・8.11、Lemmas 8.8–8.9・8.12 とその証明。指定した toric contractions の因数分解と正則な部分合成を使用する。
+- **[HKL]** P. Hacking, A. Keating, with an appendix by W. Lutz, *Homological mirror symmetry for log Calabi–Yau surfaces*, [arXiv:2005.05010v3](https://arxiv.org/abs/2005.05010v3)、[著者機関 PDF](https://api.repository.cam.ac.uk/server/api/core/bitstreams/14b8f6c3-49a3-4961-a139-d11093383ddc/content)。Appendix の Theorem 8.4 は指定されたトーリック収縮の因数分解と正則な部分合成の参照先。Definitions 8.1・8.5・8.10、Proposition 8.7、Lemmas 8.8–8.9 を中心の制約とリンクの局所公式に用いる。Proposition 8.11 に対応する減少は §5.1 の正切断による構成で示す。
 - **[BGM]** M. Bershtein, P. Gavrylenko, A. Marshakov, *Cluster integrable systems, q-Painlevé equations and their quantization*, JHEP 02 (2018) 077。[出版社公開 PDF](https://link.springer.com/content/pdf/10.1007/JHEP02(2018)077.pdf)、[arXiv:1711.02063](https://arxiv.org/abs/1711.02063)。式 (2.9)、§3.1 冒頭、Theorem 3.1 と Remark 3.1、式 (3.1)–(3.3)。部分群包含と全群一致の区別を保持する。
 - **[Mizuno]** Y. Mizuno, *q-Painlevé equations on cluster Poisson varieties via toric geometry*, Selecta Math. (2024)。[出版社公開 PDF](https://link.springer.com/content/pdf/10.1007/s00029-023-00906-2.pdf)、[arXiv:2008.11219](https://arxiv.org/abs/2008.11219)。Definitions 2.1・2.3・2.7・2.8・3.3、Lemma 3.6、Theorems 3.34–3.35。周囲格子と主張の全射性を本書と区別する。
 - **[Sakai]** H. Sakai, *Rational surfaces associated with affine root systems and geometry of the Painlevé equations*, Comm. Math. Phys. 220 (2001)。[DOI](https://doi.org/10.1007/s002200100446)、[著者プレプリント](https://www.math.kyoto-u.ac.jp/preprint/99/10.ps)。§4 の (Cr1)–(Cr3)、§6 Theorem 26。二面体群の記号を比較するときは位数も明記する。
